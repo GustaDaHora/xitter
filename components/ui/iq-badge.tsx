@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getIQColor, getIQCategory } from "@/lib/dummy-data";
+import { getIQColor, getIQCategory } from "@/lib/utils";
 import { Brain, Zap, Star, Target } from "lucide-react";
 
 interface IQBadgeProps {
