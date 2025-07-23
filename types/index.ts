@@ -1,15 +1,12 @@
 export interface User {
   id: string;
-  username: string;
-  email: string;
-  displayName: string;
-  iq: number;
-  bio: string;
-  avatar?: string;
-  joinedAt: Date;
-  followersCount: number;
-  followingCount: number;
-  isFollowing?: boolean;
+  username?: string;
+  email?: string;
+  name?: string;
+  iqScore?: number;
+  bio?: string;
+  image?: string;
+  createdAt: string;
 }
 
 export interface Post {
@@ -17,20 +14,19 @@ export interface Post {
   title: string;
   content: string;
   author: User;
-  publishedAt: Date;
-  readTime: number; // in minutes
-  likesCount: number;
-  commentsCount: number;
-  isLiked?: boolean;
+  createdAt: string;
+  views: number;
+  likes: number; // This is the count of likes
+  comments: Comment[];
+  isLikedByCurrentUser?: boolean;
+  readTime?: number;
 }
 
 export interface Comment {
   id: string;
   content: string;
   author: User;
-  publishedAt: Date;
-  likesCount: number;
-  isLiked?: boolean;
+  createdAt: string;
 }
 
 export type SortOption = 'recent' | 'highest-iq' | 'lowest-iq';
