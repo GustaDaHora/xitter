@@ -1,10 +1,14 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { IQBadge } from "@/components/ui/iq-badge";
-import { currentUser } from "@/lib/dummy-data";
 import { Search, Bell, MessageSquare, User, LogOut, Brain } from "lucide-react";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 export function Header() {
+  const { data: session } = useSession();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -32,29 +36,35 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
+          {session ? (
+            <>
+              <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+              </Button>
 
-          <Button variant="ghost" size="icon">
-            <MessageSquare className="h-5 w-5" />
-          </Button>
+              <Button variant="ghost" size="icon">
+                <MessageSquare className="h-5 w-5" />
+              </Button>
 
-          <IQBadge iq={currentUser.iq} size="sm" />
+              <IQBadge iq={session.user.iq} size="sm" />
 
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/profile">
-                <User className="h-5 w-5" />
-              </Link>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/profile">
+                    <User className="h-5 w-5" />
+                  </Link>
+                </Button>
+
+                <Button variant="ghost" size="icon" onClick={() => signOut()}>
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Button asChild>
+              <Link href="/login">Sign In</Link>
             </Button>
-
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/login">
-                <LogOut className="h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
+          )}
         </div>
       </div>
     </header>

@@ -1,7 +1,8 @@
 import { Header } from "@/components/layout/header";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
-import { dummyUsers } from "@/lib/dummy-data";
+import { useEffect, useState } from 'react';
+import { User } from '@/types';
 import { Trophy, Medal, Award, Brain, Zap, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +22,36 @@ const getRankIcon = (rank: number) => {
 };
 
 export default function Leaderboard() {
-  const sortedUsers = [...dummyUsers].sort((a, b) => b.iq - a.iq);
+  const [leaderboardUsers, setLeaderboardUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await fetch('/api/leaderboard');
+        if (!res.ok) {
+          throw new Error(`Error: ${res.status} ${res.statusText}`);
+        }
+        const data = await res.json();
+        setLeaderboardUsers(data.leaderboard);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, []);
+
+  if (loading) {
+    return <div>Loading leaderboard...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,7 +79,7 @@ export default function Leaderboard() {
 
           {/* Top 3 Podium */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            {sortedUsers.slice(0, 3).map((user, index) => {
+            {leaderboardUsers.slice(0, 3).map((user, index) => {
               const rank = index + 1;
               const isFirst = rank === 1;
 
@@ -64,19 +94,19 @@ export default function Leaderboard() {
                   <div className="flex justify-center">{getRankIcon(rank)}</div>
 
                   <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-2xl font-bold">
-                    {user.displayName[0]}
+                    {user.name ? user.name[0] : "U"}
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="font-bold text-lg">{user.displayName}</h3>
+                    <h3 className="font-bold text-lg">{user.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      @{user.username}
+                      @{user.username || user.email}
                     </p>
-                    <IQBadge iq={user.iq} showCategory />
+                    {user.iqScore && <IQBadge iq={user.iqScore} showCategory />}
                   </div>
 
                   <div className="text-sm text-muted-foreground">
-                    {user.followersCount.toLocaleString()} followers
+                    {/* {user.followersCount.toLocaleString()} followers */}
                   </div>
                 </div>
               );
@@ -93,7 +123,7 @@ export default function Leaderboard() {
             </div>
 
             <div className="divide-y divide-border">
-              {sortedUsers.map((user, index) => {
+              {leaderboardUsers.map((user, index) => {
                 const rank = index + 1;
                 const isTop3 = rank <= 3;
 
@@ -118,13 +148,13 @@ export default function Leaderboard() {
                         </div>
 
                         <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-lg font-bold">
-                          {user.displayName[0]}
+                          {user.name ? user.name[0] : "U"}
                         </div>
 
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">
-                              {user.displayName}
+                              {user.name}
                             </h3>
                             {isTop3 && (
                               <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
@@ -133,16 +163,16 @@ export default function Leaderboard() {
                             )}
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            @{user.username}
+                            @{user.username || user.email}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <IQBadge iq={user.iq} showCategory />
+                          {user.iqScore && <IQBadge iq={user.iqScore} showCategory />}
                           <p className="text-xs text-muted-foreground mt-1">
-                            {user.followersCount.toLocaleString()} followers
+                            {/* {user.followersCount.toLocaleString()} followers */}
                           </p>
                         </div>
 

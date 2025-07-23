@@ -7,13 +7,12 @@ import {
   Brain,
   Mail,
   Lock,
-  Github,
   Chrome,
-  Apple,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -23,16 +22,66 @@ export default function Login() {
     displayName: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would handle authentication
-    console.log("Auth attempt:", { isSignUp, formData });
+
+    if (isSignUp) {
+      // Handle Sign Up
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.displayName,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        if (res.ok) {
+          alert('Account created successfully! Please sign in.');
+          setIsSignUp(false); // Switch to sign-in form after successful registration
+          setFormData({ ...formData, password: '' }); // Clear password field
+        } else {
+          const errorData = await res.json();
+          alert(`Registration failed: ${errorData.error}`);
+        }
+      } catch (error) {
+        console.error('Error during registration:', error);
+        alert('An unexpected error occurred during registration.');
+      }
+    } else {
+      // Handle Sign In
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (result?.error) {
+        alert(result.error);
+      } else {
+        // Redirect to home or dashboard after successful login
+        window.location.href = '/';
+      }
+    }
+  };
+
+  const handleSocialLogin = async (provider: string) => {
+    await signIn(provider, {
+      callbackUrl: "/",
+    });
   };
 
   const socialProviders = [
-    { name: "Google", icon: Chrome, color: "hover:text-red-500" },
-    { name: "GitHub", icon: Github, color: "hover:text-gray-400" },
-    { name: "Apple", icon: Apple, color: "hover:text-gray-600" },
+    {
+      name: "Google",
+      icon: Chrome,
+      color: "hover:text-red-500",
+      provider: "google",
+    },
   ];
 
   return (
@@ -100,6 +149,7 @@ export default function Login() {
                   key={provider.name}
                   variant="outline"
                   className="w-full h-12 transition-all duration-200 hover:shadow-card"
+                  onClick={() => handleSocialLogin(provider.provider)}
                 >
                   <provider.icon
                     className={`h-5 w-5 mr-3 transition-colors ${provider.color}`}

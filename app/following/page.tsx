@@ -3,25 +3,49 @@ import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { PostCard } from '@/components/feed/post-card';
 import { SortControls } from '@/components/feed/sort-controls';
-import { dummyPosts } from '@/lib/dummy-data';
+import { Post } from '@/types';
 import { SortOption } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function Following() {
+  const { data: session } = useSession();
   const [sortOption, setSortOption] = useState<SortOption>('recent');
+  const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter posts from followed users (for demo, showing all posts)
-  const followingPosts = [...dummyPosts].sort((a, b) => {
-    switch (sortOption) {
-      case 'highest-iq':
-        return b.author.iq - a.author.iq;
-      case 'lowest-iq':
-        return a.author.iq - b.author.iq;
-      case 'recent':
-      default:
-        return b.publishedAt.getTime() - a.publishedAt.getTime();
-    }
-  });
+  useEffect(() => {
+    const fetchFollowingPosts = async () => {
+      if (!session?.user?.id) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        // Assuming you have an API endpoint for fetching posts from followed users
+        // For now, we'll fetch all posts and filter them (this is not efficient for large datasets)
+        // A proper backend implementation would filter at the database level.
+        const res = await fetch(`/api/posts?sortBy=${sortOption}`);
+        const data = await res.json();
+        // In a real app, you'd filter by followed users here or have a dedicated API
+        setFollowingPosts(data.posts);
+      } catch (error) {
+        console.error("Failed to fetch following posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFollowingPosts();
+  }, [sortOption, session]);
+
+  if (loading) {
+    return <div>Loading posts...</div>;
+  }
+
+  if (!session) {
+    return <div>Please sign in to view posts from followed users.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,9 +64,27 @@ export default function Following() {
             </div>
             
             <div className="space-y-6">
-              {followingPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
+              {followingPosts.length > 0 ? (
+                followingPosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onLikeToggle={(postId, isLiked) => {
+                      setFollowingPosts((prevPosts) =>
+                        prevPosts.map((p) =>
+                          p.id === postId
+                            ? { ...p, likes: isLiked ? p.likes + 1 : p.likes - 1, isLikedByCurrentUser: isLiked }
+                            : p
+                        )
+                      );
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-12 bg-card border border-border rounded-xl">
+                  <p className="text-muted-foreground">No posts from followed users yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </main>

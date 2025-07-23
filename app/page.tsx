@@ -1,26 +1,81 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PostCard } from "@/components/feed/post-card";
 import { SortControls } from "@/components/feed/sort-controls";
-import { dummyPosts } from "@/lib/dummy-data";
-import { SortOption } from "@/types";
+import { SortOption, Post } from "@/types";
+import { useSession } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
+  const { data: session } = useSession();
   const [sortOption, setSortOption] = useState<SortOption>("recent");
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newPostTitle, setNewPostTitle] = useState("");
+  const [newPostContent, setNewPostContent] = useState("");
 
-  const sortedPosts = [...dummyPosts].sort((a, b) => {
-    switch (sortOption) {
-      case "highest-iq":
-        return b.author.iq - a.author.iq;
-      case "lowest-iq":
-        return a.author.iq - b.author.iq;
-      case "recent":
-      default:
-        return b.publishedAt.getTime() - a.publishedAt.getTime();
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/posts?sortBy=${sortOption}`);
+        const data = await res.json();
+        setPosts(data.posts);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, [sortOption]);
+
+  const handleCreatePost = async () => {
+    if (!session) {
+      alert("You need to be logged in to create a post.");
+      return;
     }
-  });
+    if (!newPostTitle || !newPostContent) {
+      alert("Title and content cannot be empty.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newPostTitle,
+          content: newPostContent,
+        }),
+      });
+
+      if (res.ok) {
+        setNewPostTitle("");
+        setNewPostContent("");
+        // Re-fetch posts to show the new one
+        const updatedRes = await fetch(`/api/posts?sortBy=${sortOption}`);
+        const updatedData = await updatedRes.json();
+        setPosts(updatedData.posts);
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to create post: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
+      alert("An unexpected error occurred while creating the post.");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading posts...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,10 +94,54 @@ export default function Home() {
               />
             </div>
 
+            {session && (
+              <div className="bg-gradient-card border border-border rounded-xl p-6 space-y-4">
+                <h2 className="text-xl font-semibold">Create New Post</h2>
+                <Input
+                  placeholder="Post Title (max 69 chars)"
+                  maxLength={69}
+                  value={newPostTitle}
+                  onChange={(e) => setNewPostTitle(e.target.value)}
+                />
+                <Textarea
+                  placeholder="What's on your mind? (max 420 chars)"
+                  maxLength={420}
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  rows={4}
+                />
+                <Button onClick={handleCreatePost}>Post</Button>
+              </div>
+            )}
+
             <div className="space-y-6">
-              {sortedPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
+              {Array.isArray(posts) && posts.length > 0 ? (
+                posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onLikeToggle={(postId, isLiked) => {
+                      setPosts((prevPosts) =>
+                        prevPosts.map((p) =>
+                          p.id === postId
+                            ? {
+                                ...p,
+                                likes: isLiked ? p.likes + 1 : p.likes - 1,
+                                isLikedByCurrentUser: isLiked,
+                              }
+                            : p
+                        )
+                      );
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-12 bg-card border border-border rounded-xl">
+                  <p className="text-muted-foreground">
+                    No posts yet. Be the first to share your genius!
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </main>

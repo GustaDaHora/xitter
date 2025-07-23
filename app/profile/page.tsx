@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
@@ -7,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { currentUser, dummyPosts } from "@/lib/dummy-data";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import {
   Calendar,
   MapPin,
@@ -19,29 +21,73 @@ import {
 } from "lucide-react";
 
 export default function Profile() {
+  const { data: session, status, update } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    displayName: currentUser.displayName,
-    bio: currentUser.bio,
-    email: currentUser.email,
+    displayName: "",
+    bio: "",
+    email: "",
   });
 
-  const userPosts = dummyPosts.filter(
-    (post) => post.author.id === currentUser.id
-  );
+  useEffect(() => {
+    if (session) {
+      setEditForm({
+        displayName: session.user.name || "",
+        bio: session.user.bio || "",
+        email: session.user.email || "",
+      });
+    }
+  }, [session]);
 
-  const handleSave = () => {
-    // In a real app, this would update the user profile via API
-    console.log("Updated profile:", editForm);
-    setIsEditing(false);
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return <div>Please sign in to view your profile.</div>;
+  }
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editForm.displayName,
+          email: editForm.email,
+          bio: editForm.bio,
+        }),
+      });
+
+      if (res.ok) {
+        // Refresh the session to reflect updated user data
+        update({
+          name: editForm.displayName,
+          email: editForm.email,
+          bio: editForm.bio,
+        });
+        setIsEditing(false);
+      } else {
+        const errorData = await res.json();
+        console.error("Failed to update profile:", errorData.error);
+        alert(`Failed to update profile: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An unexpected error occurred while updating profile.");
+    }
   };
 
   const handleCancel = () => {
-    setEditForm({
-      displayName: currentUser.displayName,
-      bio: currentUser.bio,
-      email: currentUser.email,
-    });
+    if (session) {
+      setEditForm({
+        displayName: session.user.name || "",
+        bio: session.user.bio || "",
+        email: session.user.email || "",
+      });
+    }
     setIsEditing(false);
   };
 
@@ -64,7 +110,7 @@ export default function Profile() {
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
                   <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center text-2xl font-bold border-4 border-background -mt-12">
-                    {currentUser.displayName[0]}
+                    {session.user.name ? session.user.name[0] : "U"}
                   </div>
 
                   {/* Basic Info */}
@@ -82,14 +128,16 @@ export default function Profile() {
                       />
                     ) : (
                       <h1 className="text-2xl font-bold">
-                        {currentUser.displayName}
+                        {session.user.name}
                       </h1>
                     )}
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
-                        @{currentUser.username}
+                        @{session.user.email}
                       </span>
-                      <IQBadge iq={currentUser.iq} showCategory />
+                      {session.user.iqScore && (
+                        <IQBadge iq={session.user.iqScore} showCategory />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -137,7 +185,7 @@ export default function Profile() {
                     rows={3}
                   />
                 ) : (
-                  <p className="text-foreground/90">{currentUser.bio}</p>
+                  <p className="text-foreground/90">{session.user.bio}</p>
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -145,10 +193,15 @@ export default function Profile() {
                     <Calendar className="h-4 w-4" />
                     <span>
                       Joined{" "}
-                      {currentUser.joinedAt.toLocaleDateString("en-US", {
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {session.user.createdAt
+                        ? new Date(session.user.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )
+                        : "Date unknown"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -164,23 +217,19 @@ export default function Profile() {
                 {/* Stats */}
                 <div className="flex gap-6">
                   <div>
-                    <span className="font-bold">
-                      {currentUser.followingCount}
-                    </span>
+                    <span className="font-bold">0</span>
                     <span className="text-muted-foreground ml-1">
                       Following
                     </span>
                   </div>
                   <div>
-                    <span className="font-bold">
-                      {currentUser.followersCount}
-                    </span>
+                    <span className="font-bold">0</span>
                     <span className="text-muted-foreground ml-1">
                       Followers
                     </span>
                   </div>
                   <div>
-                    <span className="font-bold">{userPosts.length}</span>
+                    <span className="font-bold">0</span>
                     <span className="text-muted-foreground ml-1">Posts</span>
                   </div>
                 </div>
@@ -197,26 +246,22 @@ export default function Profile() {
             </TabsList>
 
             <TabsContent value="posts" className="space-y-6">
-              {userPosts.length > 0 ? (
-                userPosts.map((post) => <PostCard key={post.id} post={post} />)
-              ) : (
-                <div className="text-center py-12 bg-card border border-border rounded-xl">
-                  <p className="text-muted-foreground">
-                    No posts yet. Start sharing your genius!
-                  </p>
-                </div>
-              )}
+              <div className="text-center py-12 bg-card border border-border rounded-xl">
+                <p className="text-muted-foreground">
+                  No posts yet. Start sharing your genius!
+                </p>
+              </div>
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
                   <h3 className="text-2xl font-bold text-primary">
-                    {currentUser.iq}
+                    {session.user.iqScore}
                   </h3>
                   <p className="text-muted-foreground">Current IQ Score</p>
-                  <Button className="mt-4" size="sm">
-                    Retake Test
+                  <Button className="mt-4" size="sm" asChild>
+                    <Link href="/iq-test">Retake Test</Link>
                   </Button>
                 </div>
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
@@ -251,7 +296,7 @@ export default function Profile() {
                       />
                     ) : (
                       <p className="mt-1 p-3 bg-muted rounded-lg">
-                        {currentUser.email}
+                        {session.user.email}
                       </p>
                     )}
                   </div>
@@ -259,7 +304,7 @@ export default function Profile() {
                   <div>
                     <label className="text-sm font-medium">Username</label>
                     <p className="mt-1 p-3 bg-muted rounded-lg">
-                      @{currentUser.username}
+                      @{session.user.email}
                     </p>
                   </div>
 
