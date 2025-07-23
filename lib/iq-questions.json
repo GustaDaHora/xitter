@@ -1,0 +1,52 @@
+[
+  {
+    "question": "Which number should come next in the pattern? 1, 4, 9, 16, ?",
+    "options": ["20", "25", "30", "36"],
+    "answer": "25"
+  },
+  {
+    "question": "If you rearrange the letters C-I-F-I-P-A-C, you would have the name of a(n):",
+    "options": ["City", "Animal", "Ocean", "River"],
+    "answer": "Ocean"
+  },
+  {
+    "question": "A is the father of B. But B is not the son of A. How is that possible?",
+    "options": ["B is A's nephew", "B is A's daughter", "A is B's uncle", "None of the above"],
+    "answer": "B is A's daughter"
+  },
+  {
+    "question": "A man builds a house with all four sides facing south. A bear walks past the house. What color is the bear?",
+    "options": ["White", "Black", "Brown", "Grey"],
+    "answer": "White"
+  },
+  {
+    "question": "What is half of a quarter of 8000?",
+    "options": ["1000", "2000", "4000", "500"],
+    "answer": "1000"
+  },
+  {
+    "question": "A doctor gives you 3 pills and tells you to take one every half hour. How long would it be before all the pills had been taken?",
+    "options": ["1 hour", "1.5 hours", "2 hours", "30 minutes"],
+    "answer": "1 hour"
+  },
+  {
+    "question": "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?",
+    "options": ["A dream", "A map", "A book", "A photograph"],
+    "answer": "A map"
+  },
+  {
+    "question": "What has an eye, but cannot see?",
+    "options": ["A storm", "A needle", "A potato", "A hurricane"],
+    "answer": "A needle"
+  },
+  {
+    "question": "What is always in front of you but can’t be seen?",
+    "options": ["The past", "The present", "The future", "The air"],
+    "answer": "The future"
+  },
+  {
+    "question": "What has a neck without a head?",
+    "options": ["A bottle", "A shirt", "A guitar", "A mountain"],
+    "answer": "A bottle"
+  }
+]
