@@ -303,7 +303,7 @@ export default function Profile() {
                   <div>
                     <label className="text-sm font-medium">Username</label>
                     <p className="mt-1 p-3 bg-muted rounded-lg">
-                      @{session.user.email}
+                      @{session.user.username}
                     </p>
                   </div>
 
