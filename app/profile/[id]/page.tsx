@@ -6,13 +6,11 @@ import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Post } from "@/types";
 import {
   Calendar,
   MapPin,
   Link as LinkIcon,
-  Edit3,
-  Save,
-  X,
   Settings,
 } from "lucide-react";
 
@@ -25,16 +23,38 @@ interface UserProfile {
   bio?: string;
   iqScore?: number;
   createdAt: string;
-  posts: any[]; // Replace 'any' with actual Post type
+  posts: Post[];
 }
 
-export default function PublicProfilePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function PublicProfilePage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  const [id, setId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Resolve params promise
   useEffect(() => {
+    const resolveParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setId(resolvedParams.id);
+      } catch (err) {
+        setError("Failed to load profile parameters");
+        setLoading(false);
+      }
+    };
+
+    resolveParams();
+  }, [params]);
+
+  // Fetch user profile once id is available
+  useEffect(() => {
+    if (!id) return;
+
     const fetchUserProfile = async () => {
       try {
         const res = await fetch(`/api/user/${id}`);
@@ -43,8 +63,12 @@ export default function PublicProfilePage({ params }: { params: { id: string } }
         }
         const data = await res.json();
         setUserProfile(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred.");
+        }
       } finally {
         setLoading(false);
       }
