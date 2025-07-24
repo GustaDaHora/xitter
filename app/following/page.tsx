@@ -1,16 +1,15 @@
 "use client";
-import { Header } from '@/components/layout/header';
-import { Sidebar } from '@/components/layout/sidebar';
-import { PostCard } from '@/components/feed/post-card';
-import { SortControls } from '@/components/feed/sort-controls';
-import { Post } from '@/types';
-import { SortOption } from '@/types';
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { Header } from "@/components/layout/header";
+import { Sidebar } from "@/components/layout/sidebar";
+import { PostCard } from "@/components/feed/post-card";
+import { SortControls } from "@/components/feed/sort-controls";
+import { Post, SortOption } from "@/types";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Following() {
   const { data: session } = useSession();
-  const [sortOption, setSortOption] = useState<SortOption>('recent');
+  const [sortOption, setSortOption] = useState<SortOption>("recent");
   const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,10 +38,6 @@ export default function Following() {
     fetchFollowingPosts();
   }, [sortOption, session]);
 
-  if (loading) {
-    return <div>Loading posts...</div>;
-  }
-
   if (!session) {
     return <div>Please sign in to view posts from followed users.</div>;
   }
@@ -52,7 +47,7 @@ export default function Following() {
       <Header />
       <div className="flex">
         <Sidebar />
-        
+
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
             <div className="space-y-4">
@@ -60,11 +55,18 @@ export default function Following() {
               <p className="text-muted-foreground">
                 Posts from brilliant minds you follow
               </p>
-              <SortControls currentSort={sortOption} onSortChange={setSortOption} />
+              <SortControls
+                currentSort={sortOption}
+                onSortChange={setSortOption}
+              />
             </div>
-            
+
             <div className="space-y-6">
-              {followingPosts.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-12 bg-card border border-border rounded-xl">
+                  <p className="text-muted-foreground">Loading posts...</p>
+                </div>
+              ) : followingPosts.length > 0 ? (
                 followingPosts.map((post) => (
                   <PostCard
                     key={post.id}
@@ -73,7 +75,13 @@ export default function Following() {
                       setFollowingPosts((prevPosts) =>
                         prevPosts.map((p) =>
                           p.id === postId
-                            ? { ...p, likes: isLiked ? p.likes + 1 : p.likes - 1, isLikedByCurrentUser: isLiked }
+                            ? {
+                                ...p,
+                                likesCount: isLiked
+                                  ? p.likesCount + 1
+                                  : p.likesCount - 1,
+                                isLikedByCurrentUser: isLiked,
+                              }
                             : p
                         )
                       );
@@ -82,7 +90,9 @@ export default function Following() {
                 ))
               ) : (
                 <div className="text-center py-12 bg-card border border-border rounded-xl">
-                  <p className="text-muted-foreground">No posts from followed users yet.</p>
+                  <p className="text-muted-foreground">
+                    No posts from followed users yet.
+                  </p>
                 </div>
               )}
             </div>
@@ -96,7 +106,9 @@ export default function Following() {
             <div className="space-y-3 text-sm">
               <p className="text-muted-foreground">• 42 new posts today</p>
               <p className="text-muted-foreground">• 3 IQ tests completed</p>
-              <p className="text-muted-foreground">• 18 genius insights shared</p>
+              <p className="text-muted-foreground">
+                • 18 genius insights shared
+              </p>
             </div>
           </div>
         </aside>
