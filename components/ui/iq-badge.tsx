@@ -3,7 +3,7 @@ import { getIQColor, getIQCategory } from "@/lib/utils";
 import { Brain, Zap, Star, Target } from "lucide-react";
 
 interface IQBadgeProps {
-  iq: number;
+  iq: number | undefined;
   size?: "sm" | "md" | "lg";
   showCategory?: boolean;
   className?: string;
@@ -15,7 +15,10 @@ export function IQBadge({
   showCategory = false,
   className,
 }: IQBadgeProps) {
-  const getIcon = (iq: number) => {
+  const getIcon = (
+    iq: number | undefined
+  ): React.FC<{ className?: string }> | undefined => {
+    if (iq == undefined) return;
     if (iq >= 180) return Brain;
     if (iq >= 140) return Zap;
     if (iq >= 100) return Star;
@@ -48,7 +51,7 @@ export function IQBadge({
         className
       )}
     >
-      <Icon className={iconSizes[size]} />
+      {Icon && <Icon className={iconSizes[size]} />} {/* <- Safe check here */}
       <span>{iq}</span>
       {showCategory && (
         <span className="text-xs opacity-80 font-medium">{category}</span>
