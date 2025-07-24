@@ -16,7 +16,7 @@ export interface Post {
   author: User;
   createdAt: string;
   views: number;
-  likes: number; // This is the count of likes
+  likesCount: number; // Changed from 'likes' to match Prisma schema
   comments: Comment[];
   isLikedByCurrentUser?: boolean;
   readTime?: number;
@@ -27,9 +27,12 @@ export interface Comment {
   content: string;
   author: User;
   createdAt: string;
+  authorId: string;
+  likesCount: number;
+  isLikedByCurrentUser?: boolean;
 }
 
-export type SortOption = 'recent' | 'highest-iq' | 'lowest-iq';
+export type SortOption = 'recent' | 'popular' | 'controversial' | 'oldest';
 
 export interface IQTestResult {
   id: string;
@@ -38,3 +41,6 @@ export interface IQTestResult {
   completedAt: Date;
   category: 'genius' | 'high' | 'average' | 'low';
 }
+
+// For backward compatibility, you can also export this alias
+export type PostWithRelations = Post;
