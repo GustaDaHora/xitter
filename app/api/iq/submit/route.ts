@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/lib/prisma'
 import questions from '@/lib/iq-questions.json'
+import { authOptions } from '@/lib/auth-options'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)

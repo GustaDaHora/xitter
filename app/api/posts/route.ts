@@ -1,8 +1,8 @@
 // app/api/posts/route.ts
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/lib/prisma'
+import { authOptions } from '@/lib/auth-options'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -10,7 +10,14 @@ export async function GET(req: Request) {
   const limit = parseInt(searchParams.get('limit') || '10')
   const sortBy = searchParams.get('sortBy') || 'recent' // 'recent', 'highestIQ', 'lowestIQ'
 
-  let orderBy: any = { createdAt: 'desc' }
+  type OrderBy = {
+    createdAt?: 'desc';
+    author?: {
+      iqScore: 'desc' | 'asc';
+    };
+  };
+
+  let orderBy: OrderBy = { createdAt: 'desc' };
   if (sortBy === 'highestIQ') {
     orderBy = { author: { iqScore: 'desc' } }
   } else if (sortBy === 'lowestIQ') {

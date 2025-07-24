@@ -1,20 +1,20 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import prisma from '@/lib/prisma'
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth-options";
 
 export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = params
-  const userId = session.user.id
+  const { id } = await context.params;
+  const userId = session.user.id;
 
   try {
     // Check if the user has already liked the post
@@ -25,51 +25,60 @@ export async function POST(
           postId: id,
         },
       },
-    })
+    });
 
     if (existingLike) {
-      return NextResponse.json({ message: 'Post already liked' }, { status: 200 })
+      return NextResponse.json(
+        { message: "Post already liked" },
+        { status: 200 }
+      );
     }
 
-    await prisma.like.create({
-      data: {
-        userId,
-        postId: id,
-      },
-    })
-
-    // Increment the likes count on the Post model
-    const updatedPost = await prisma.post.update({
-      where: { id },
-      data: {
-        likes: {
-          increment: 1,
+    // Use a transaction to ensure data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the like
+      await tx.like.create({
+        data: {
+          userId,
+          postId: id,
         },
-      },
-    })
+      });
 
-    return NextResponse.json({ message: 'Post liked successfully', likes: updatedPost.likes })
+      // Update the post's likesCount
+      const updatedPost = await tx.post.update({
+        where: { id },
+        data: {
+          likesCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      return updatedPost;
+    });
+
+    return NextResponse.json({
+      message: "Post liked successfully",
+      likes: result.likesCount,
+    });
   } catch (error) {
-    console.error('Error liking post:', error)
-    return NextResponse.json(
-      { error: 'Failed to like post' },
-      { status: 500 }
-    )
+    console.error("Error liking post:", error);
+    return NextResponse.json({ error: "Failed to like post" }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = params
-  const userId = session.user.id
+  const { id } = await context.params;
+  const userId = session.user.id;
 
   try {
     // Check if the user has liked the post
@@ -80,37 +89,46 @@ export async function DELETE(
           postId: id,
         },
       },
-    })
+    });
 
     if (!existingLike) {
-      return NextResponse.json({ message: 'Post not liked' }, { status: 200 })
+      return NextResponse.json({ message: "Post not liked" }, { status: 200 });
     }
 
-    await prisma.like.delete({
-      where: {
-        userId_postId: {
-          userId,
-          postId: id,
+    // Use a transaction to ensure data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Delete the like
+      await tx.like.delete({
+        where: {
+          userId_postId: {
+            userId,
+            postId: id,
+          },
         },
-      },
-    })
+      });
 
-    // Decrement the likes count on the Post model
-    const updatedPost = await prisma.post.update({
-      where: { id },
-      data: {
-        likes: {
-          decrement: 1,
+      // Update the post's likesCount
+      const updatedPost = await tx.post.update({
+        where: { id },
+        data: {
+          likesCount: {
+            decrement: 1,
+          },
         },
-      },
-    })
+      });
 
-    return NextResponse.json({ message: 'Post unliked successfully', likes: updatedPost.likes })
+      return updatedPost;
+    });
+
+    return NextResponse.json({
+      message: "Post unliked successfully",
+      likes: result.likesCount,
+    });
   } catch (error) {
-    console.error('Error unliking post:', error)
+    console.error("Error unliking post:", error);
     return NextResponse.json(
-      { error: 'Failed to unlike post' },
+      { error: "Failed to unlike post" },
       { status: 500 }
-    )
+    );
   }
 }

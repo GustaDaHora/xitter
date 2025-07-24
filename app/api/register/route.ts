@@ -21,9 +21,9 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(newUser, { status: 201 })
-  } catch (error: any) {
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-      return NextResponse.json({ error: 'Email already exists' }, { status: 409 })
+  } catch (error) {
+    if (error instanceof Object && 'code' in error && error.code === 'P2002') {
+      return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
     }
     console.error('Error registering user:', error)
     return NextResponse.json(
