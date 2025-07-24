@@ -1,18 +1,20 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export const getIQColor = (iq: number): string => {
+export const getIQColor = (iq: number | undefined): string => {
+  if (iq == undefined) return("text-iq-low") ;
   if (iq >= 180) return "text-iq-genius";
   if (iq >= 140) return "text-iq-high";
   if (iq >= 100) return "text-iq-average";
   return "text-iq-low";
 };
 
-export const getIQCategory = (iq: number): string => {
+export const getIQCategory = (iq: number | undefined): string => {
+  if (iq == undefined) return("LOW") ;
   if (iq >= 180) return "GENIUS";
   if (iq >= 140) return "HIGH";
   if (iq >= 100) return "AVERAGE";
