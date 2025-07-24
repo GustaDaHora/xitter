@@ -118,7 +118,7 @@ export default function PublicProfilePage({
                     </h1>
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
-                        @{userProfile.username || userProfile.email}
+                        @{userProfile.username || "No username set yet"}
                       </span>
                       {userProfile.iqScore && (
                         <IQBadge iq={userProfile.iqScore} showCategory />
@@ -235,7 +235,7 @@ export default function PublicProfilePage({
                   <div>
                     <label className="text-sm font-medium">Username</label>
                     <p className="mt-1 p-3 bg-muted rounded-lg">
-                      @{userProfile.username || userProfile.email}
+                      @{userProfile.username || "No username set yet"}
                     </p>
                   </div>
 
