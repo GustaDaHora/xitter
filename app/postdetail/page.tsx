@@ -6,44 +6,12 @@ import { Header } from "@/components/layout/header";
 import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
-import { formatDate, calculateReadTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { Heart, MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  views: number;
-  likes: number;
-  authorId: string;
-  author: {
-    id: string;
-    name: string;
-    username?: string;
-    iqScore?: number;
-    image?: string;
-  };
-  comments: Comment[];
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  authorId: string;
-  author: {
-    id: string;
-    name: string;
-    username?: string;
-    iqScore?: number;
-    image?: string;
-  };
-}
-
+import { Post } from "@/types";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -52,7 +20,6 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
-  const [isLikedByCurrentUser, setIsLikedByCurrentUser] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -63,16 +30,12 @@ export default function PostDetail() {
         }
         const data = await res.json();
         setPost(data);
-        if (session?.user?.id) {
-          // Check if the current user has liked this post
-          const likeRes = await fetch(`/api/posts/${id}/like/status?userId=${session.user.id}`);
-          if (likeRes.ok) {
-            const likeData = await likeRes.json();
-            setIsLikedByCurrentUser(likeData.isLiked);
-          }
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred.");
         }
-      } catch (err: any) {
-        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -81,15 +44,18 @@ export default function PostDetail() {
     fetchPost();
   }, [id, session]);
 
-  const handleLike = async () => {
+  // Handle post like toggle
+  const handlePostLike = async () => {
     if (!session) {
       alert("You need to be logged in to like a post.");
       return;
     }
 
+    if (!post) return;
+
     try {
-      const method = isLikedByCurrentUser ? "DELETE" : "POST";
-      const res = await fetch(`/api/posts/${post?.id}/like`, {
+      const method = post.isLikedByCurrentUser ? "DELETE" : "POST";
+      const res = await fetch(`/api/posts/${post.id}/like`, {
         method,
         headers: {
           "Content-Type": "application/json",
@@ -97,12 +63,13 @@ export default function PostDetail() {
       });
 
       if (res.ok) {
-        setIsLikedByCurrentUser(!isLikedByCurrentUser);
+        const data = await res.json();
         setPost((prevPost) => {
           if (!prevPost) return null;
           return {
             ...prevPost,
-            likes: isLikedByCurrentUser ? prevPost.likes - 1 : prevPost.likes + 1,
+            likesCount: data.likes, // Use the actual count from server response
+            isLikedByCurrentUser: !prevPost.isLikedByCurrentUser,
           };
         });
       } else {
@@ -110,17 +77,118 @@ export default function PostDetail() {
         alert(`Failed to toggle like: ${errorData.error}`);
       }
     } catch (error) {
-      console.error("Error toggling like:", error);
+      console.error("Error toggling post like:", error);
       alert("An unexpected error occurred while toggling like.");
     }
   };
 
+  // Handle comment like toggle
+  const handleCommentLike = async (commentId: string) => {
+    if (!session) {
+      alert("You need to be logged in to like a comment.");
+      return;
+    }
+
+    if (!post) return;
+
+    const comment = post.comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    try {
+      const method = comment.isLikedByCurrentUser ? "DELETE" : "POST";
+      const res = await fetch(`/api/comments/${commentId}/like`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPost((prevPost) => {
+          if (!prevPost) return null;
+          return {
+            ...prevPost,
+            comments: prevPost.comments.map((c) =>
+              c.id === commentId
+                ? {
+                    ...c,
+                    likesCount: data.likes, // Use actual count from server
+                    isLikedByCurrentUser: !c.isLikedByCurrentUser,
+                  }
+                : c
+            ),
+          };
+        });
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to toggle comment like: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error toggling comment like:", error);
+      alert("An unexpected error occurred while toggling comment like.");
+    }
+  };
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!session) {
+      alert("You need to be logged in to comment.");
+      return;
+    }
+    if (!newComment.trim()) {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/posts/${post?.id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: newComment }),
+      });
+
+      if (res.ok) {
+        setNewComment("");
+        // Re-fetch post to get the new comment
+        const updatedRes = await fetch(`/api/posts/${post?.id}`);
+        const updatedData = await updatedRes.json();
+        setPost(updatedData);
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to add comment: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      alert("An unexpected error occurred while adding the comment.");
+    }
+  };
+
   if (loading) {
-    return <div>Loading post...</div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-lg">Loading post...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4 text-destructive">Error</h1>
+            <p className="mb-4">{error}</p>
+            <Link href="/" className="text-primary hover:underline">
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!post) {
@@ -139,42 +207,6 @@ export default function PostDetail() {
     );
   }
 
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!session) {
-      alert("You need to be logged in to comment.");
-      return;
-    }
-    if (!newComment.trim()) {
-      alert("Comment cannot be empty.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/posts/${post.id}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: newComment }),
-      });
-
-      if (res.ok) {
-        setNewComment("");
-        // Re-fetch post to get the new comment
-        const updatedRes = await fetch(`/api/posts/${post.id}`);
-        const updatedData = await updatedRes.json();
-        setPost(updatedData);
-      } else {
-        const errorData = await res.json();
-        alert(`Failed to add comment: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      alert("An unexpected error occurred while adding the comment.");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -190,7 +222,11 @@ export default function PostDetail() {
           </Button>
 
           {/* Post */}
-          <PostCard post={post} isPreview={false} />
+          <PostCard 
+            post={post} 
+            isPreview={false}
+            onLikeToggle={handlePostLike}
+          />
 
           {/* Comments Section */}
           <div className="bg-card border border-border rounded-xl p-6 space-y-6">
@@ -199,40 +235,48 @@ export default function PostDetail() {
             </h2>
 
             {/* Comment Form */}
-            <form onSubmit={handleSubmitComment} className="space-y-4">
-              <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold">
-                  {session?.user?.name ? session.user.name[0] : "U"}
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Share your thoughts..."
-                    className="w-full p-3 bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                    rows={3}
-                  />
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-2">
-                      {session?.user?.iqScore && (
-                        <IQBadge iq={session.user.iqScore} size="sm" />
-                      )}
-                      <span className="text-sm text-muted-foreground">
-                        @{session?.user?.username || session?.user?.email}
-                      </span>
+            {session ? (
+              <form onSubmit={handleSubmitComment} className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold">
+                    {session?.user?.name ? session.user.name[0] : "U"}
+                  </div>
+                  <div className="flex-1">
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Share your thoughts..."
+                      className="w-full p-3 bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      rows={3}
+                    />
+                    <div className="flex justify-between items-center mt-2">
+                      <div className="flex items-center gap-2">
+                        {session?.user?.iqScore && (
+                          <IQBadge iq={session.user.iqScore} size="sm" />
+                        )}
+                        <span className="text-sm text-muted-foreground">
+                          @{session?.user?.username || session?.user?.email}
+                        </span>
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={!newComment.trim()}
+                        className="gap-2"
+                      >
+                        <Send className="h-4 w-4" />
+                        Comment
+                      </Button>
                     </div>
-                    <Button
-                      type="submit"
-                      disabled={!newComment.trim()}
-                      className="gap-2"
-                    >
-                      <Send className="h-4 w-4" />
-                      Comment
-                    </Button>
                   </div>
                 </div>
+              </form>
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                <Link href="/login" className="text-primary hover:underline">
+                  Sign in
+                </Link> to leave a comment
               </div>
-            </form>
+            )}
 
             {/* Comments List */}
             <div className="space-y-4">
@@ -255,7 +299,7 @@ export default function PostDetail() {
                           <IQBadge iq={comment.author.iqScore} size="sm" />
                         )}
                         <span className="text-sm text-muted-foreground">
-                          @{comment.author.username || comment.author.email}
+                          @{comment.author.username}
                         </span>
                         <span className="text-sm text-muted-foreground">•</span>
                         <span className="text-sm text-muted-foreground">
@@ -269,9 +313,10 @@ export default function PostDetail() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => handleCommentLike(comment.id)}
                           className={cn(
                             "gap-2 text-sm transition-all duration-200",
-                            false // comment.isLiked
+                            comment.isLikedByCurrentUser
                               ? "text-destructive"
                               : "hover:text-destructive"
                           )}
@@ -279,10 +324,10 @@ export default function PostDetail() {
                           <Heart
                             className={cn(
                               "h-4 w-4",
-                              false // comment.isLiked && "fill-current"
+                              comment.isLikedByCurrentUser && "fill-current"
                             )}
                           />
-                          <span>0</span> {/* {comment.likesCount} */}
+                          <span>{comment.likesCount || 0}</span>
                         </Button>
 
                         <Button
