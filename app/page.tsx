@@ -73,10 +73,6 @@ export default function Home() {
     }
   };
 
-  if (loading) {
-    return <div>Loading posts...</div>;
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -115,7 +111,11 @@ export default function Home() {
             )}
 
             <div className="space-y-6">
-              {Array.isArray(posts) && posts.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-12 bg-card border border-border rounded-xl">
+                  <p className="text-muted-foreground">Loading posts...</p>
+                </div>
+              ) : Array.isArray(posts) && posts.length > 0 ? (
                 posts.map((post) => (
                   <PostCard
                     key={post.id}
@@ -126,7 +126,9 @@ export default function Home() {
                           p.id === postId
                             ? {
                                 ...p,
-                                likes: isLiked ? p.likes + 1 : p.likes - 1,
+                                likes: isLiked
+                                  ? p.likesCount + 1
+                                  : p.likesCount - 1,
                                 isLikedByCurrentUser: isLiked,
                               }
                             : p
