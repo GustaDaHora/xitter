@@ -18,7 +18,7 @@ export function Header() {
             <Brain className="h-6 w-6 text-primary-foreground" />
           </div>
           <span className="bg-gradient-iq bg-clip-text text-transparent">
-            IQ X
+            Xitter
           </span>
         </Link>
 
@@ -46,7 +46,7 @@ export function Header() {
                 <MessageSquare className="h-5 w-5" />
               </Button>
 
-              <IQBadge iq={session.user.iq} size="sm" />
+              <IQBadge iq={session.user.iqScore} size="sm" />
 
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
