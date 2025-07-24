@@ -89,114 +89,113 @@ export function PostCard({
       {/* Clickable area for the entire card */}
       <Link
         href={postUrl}
-        className=""
+        className="relative h-2 w-max"
         aria-label={`Read post: ${post.title}`}
-      >
-        <div className="relative z-20">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <Link
-              href={`/profile/${post.author.id}`}
-              className="flex items-center gap-3 z-30"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-lg font-bold">
-                {post.author.name ? post.author.name[0] : "U"}
+      />
+      <div className="relative z-20">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <Link
+            href={`/profile/${post.author.id}`}
+            className="flex items-center gap-3 z-30"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-lg font-bold">
+              {post.author.name ? post.author.name[0] : "U"}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold hover:text-primary transition-colors">
+                  {post.author.name}
+                </h3>
+                {post.author.iqScore && (
+                  <IQBadge iq={post.author.iqScore} size="sm" />
+                )}
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold hover:text-primary transition-colors">
-                    {post.author.name}
-                  </h3>
-                  {post.author.iqScore && (
-                    <IQBadge iq={post.author.iqScore} size="sm" />
-                  )}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>@{post.author.username || post.author.email}</span>
-                  <span>•</span>
-                  <span>{formatDate(post.createdAt)}</span>
-                  <Clock className="h-3 w-3 ml-1" />
-                  <span>{calculateReadTime(post.content)}m read</span>
-                </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>@{post.author.username || post.author.email}</span>
+                <span>•</span>
+                <span>{formatDate(post.createdAt)}</span>
+                <Clock className="h-3 w-3 ml-1" />
+                <span>{calculateReadTime(post.content)}m read</span>
               </div>
-            </Link>
+            </div>
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="opacity-0 group-hover:opacity-100 transition-opacity z-30"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="space-y-3">
+          <h2
+            className={cn(
+              "text-xl font-bold leading-tight",
+              isPreview && "hover:text-primary transition-colors"
+            )}
+          >
+            {truncateContent(post.title, 69)}
+          </h2>
+
+          <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
+            {displayContent}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border z-30 relative">
+          <div className="flex items-center gap-6">
             <Button
               variant="ghost"
-              size="icon"
-              className="opacity-0 group-hover:opacity-100 transition-opacity z-30"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="space-y-3">
-            <h2
+              size="sm"
               className={cn(
-                "text-xl font-bold leading-tight",
-                isPreview && "hover:text-primary transition-colors"
+                "gap-2 transition-all duration-200",
+                isLiked
+                  ? "text-destructive hover:text-destructive"
+                  : "hover:text-destructive"
               )}
+              onClick={handleLike}
             >
-              {truncateContent(post.title, 69)}
-            </h2>
-
-            <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
-              {displayContent}
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-border z-30 relative">
-            <div className="flex items-center gap-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "gap-2 transition-all duration-200",
-                  isLiked
-                    ? "text-destructive hover:text-destructive"
-                    : "hover:text-destructive"
-                )}
-                onClick={handleLike}
-              >
-                <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
-                <span>{currentLikes}</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2 hover:text-primary transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>{post.comments?.length || 0}</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2 hover:text-success transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Repeat2 className="h-4 w-4" />
-                <span>42</span>
-              </Button>
-            </div>
+              <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
+              <span>{currentLikes}</span>
+            </Button>
 
             <Button
               variant="ghost"
               size="sm"
-              className="hover:text-primary transition-colors"
+              className="gap-2 hover:text-primary transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
-              <Share className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4" />
+              <span>{post.comments?.length || 0}</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2 hover:text-success transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Repeat2 className="h-4 w-4" />
+              <span>42</span>
             </Button>
           </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:text-primary transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Share className="h-4 w-4" />
+          </Button>
         </div>
-      </Link>
+      </div>
     </article>
   );
 }
