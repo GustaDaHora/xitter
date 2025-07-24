@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
-import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
