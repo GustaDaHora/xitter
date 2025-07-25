@@ -42,7 +42,7 @@ export async function GET(
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-
+    console.log("Post found:", post);
     return NextResponse.json(post);
   } catch (error) {
     console.error("Error fetching post:", error);
