@@ -1,62 +1,69 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface Question {
-  question: string
-  options: string[]
-  answer: string
+  question: string;
+  options: string[];
+  answer: string;
 }
 
 export default function IQTestPage() {
-  const [questions, setQuestions] = useState<Question[]>([])
-  const [answers, setAnswers] = useState<string[]>([])
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const res = await fetch('/api/iq/questions')
-      const data = await res.json()
-      setQuestions(data)
-      setAnswers(new Array(data.length).fill(''))
-      setLoading(false)
-    }
+      const res = await fetch("/api/iq/questions");
+      const data = await res.json();
+      setQuestions(data);
+      setAnswers(new Array(data.length).fill(""));
+      setLoading(false);
+    };
 
-    fetchQuestions()
-  }, [])
+    fetchQuestions();
+  }, []);
 
   const handleAnswer = (answer: string) => {
-    const newAnswers = [...answers]
-    newAnswers[currentQuestion] = answer
-    setAnswers(newAnswers)
-  }
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = answer;
+    setAnswers(newAnswers);
+  };
 
   const nextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      setCurrentQuestion(currentQuestion + 1);
     }
-  }
+  };
 
   const submitTest = async () => {
-    const res = await fetch('/api/iq/submit', {
-      method: 'POST',
+    const res = await fetch("/api/iq/submit", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ answers }),
-    })
+    });
 
     if (res.ok) {
-      router.push('/profile')
+      router.push("/profile");
     }
-  }
+  };
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
+        <h1 className="text-2xl font-bold mb-2">Hello, world!</h1>
+        <p className="text-muted-foreground">
+          This is a simple animated component using Tailwind CSS.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -68,7 +75,9 @@ export default function IQTestPage() {
           {questions[currentQuestion].options.map((option) => (
             <Button
               key={option}
-              variant={answers[currentQuestion] === option ? 'default' : 'outline'}
+              variant={
+                answers[currentQuestion] === option ? "default" : "outline"
+              }
               onClick={() => handleAnswer(option)}
             >
               {option}
@@ -84,5 +93,5 @@ export default function IQTestPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
