@@ -108,6 +108,7 @@ export default function Trending() {
               <TrendingUp className="h-5 w-5" />
               Trending Topics
             </h3>
+            {/*
             <div className="space-y-3">
               {trendingTopics.map((topic, index) => (
                 <div
@@ -126,7 +127,7 @@ export default function Trending() {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
             <Button variant="outline" className="w-full mt-4">
               See More Topics
             </Button>

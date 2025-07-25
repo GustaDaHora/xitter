@@ -26,7 +26,12 @@ export default function Leaderboard() {
   const [leaderboardUsers, setLeaderboardUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+  
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
@@ -60,7 +65,7 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header toggleMenu={toggleMenu} />
 
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
