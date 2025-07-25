@@ -14,6 +14,7 @@ import {
 import { IQBadge } from "../ui/iq-badge";
 import { cn, formatDate, calculateReadTime } from "@/lib/utils";
 import { Post } from "@/types";
+import { useRouter } from "next/navigation";
 
 interface PostCardProps {
   post: Post;
@@ -82,17 +83,21 @@ export function PostCard({
     ? truncateContent(post.content, 420)
     : post.content;
 
-  const postUrl = `/postdetail/${post.id}`;
+  const postUrl = `/post/${post.id}`;
+  const router = useRouter();
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only navigate if we didn't click on an interactive element
+    if (!(e.target as Element).closest("button")) {
+      router.push(postUrl);
+    }
+  };
 
   return (
-    <article className="relative group bg-card border border-border rounded-xl p-6 hover:shadow-card transition-all duration-300">
-      {/* Clickable area for the entire card */}
-      <Link
-        href={postUrl}
-        className="relative h-2 w-max"
-        aria-label={`Read post: ${post.title}`}
-      />
-      <div className="relative z-20">
+    <article
+      onClick={handleCardClick}
+      className="relative group bg-card border border-border rounded-xl p-6 hover:shadow-card transition-all duration-300 cursor-pointer"
+    >
+      <div className="relative z-10">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <Link
