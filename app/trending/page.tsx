@@ -33,23 +33,28 @@ export default function Trending() {
     fetchTrendingPosts();
   }, []);
 
-  if (loading) {
-    return <div>Loading trending posts...</div>;
-  }
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const trendingTopics = [
-    { name: "#QuantumThinking", posts: 2847, trend: "+45%" },
-    { name: "#AIPhilosophy", posts: 1923, trend: "+32%" },
-    { name: "#NeuralNetworks", posts: 1456, trend: "+28%" },
-    { name: "#CosmicPerspective", posts: 1203, trend: "+15%" },
-    { name: "#DataScience", posts: 987, trend: "+22%" },
-  ];
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  if (loading) {
+    return (
+      <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
+        <h1 className="text-2xl font-bold mb-2">Hello, world!</h1>
+        <p className="text-muted-foreground">
+          This is a simple animated component using Tailwind CSS.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header toggleMenu={toggleMenu} />
       <div className="flex">
-        <Sidebar />
+      <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
 
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
@@ -80,7 +85,9 @@ export default function Trending() {
                           p.id === postId
                             ? {
                                 ...p,
-                                likes: isLiked ? p.likesCount + 1 : p.likesCount - 1,
+                                likes: isLiked
+                                  ? p.likesCount + 1
+                                  : p.likesCount - 1,
                                 isLikedByCurrentUser: isLiked,
                               }
                             : p

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
@@ -7,12 +7,7 @@ import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Post } from "@/types";
-import {
-  Calendar,
-  MapPin,
-  Link as LinkIcon,
-  Settings,
-} from "lucide-react";
+import { Calendar, MapPin, Link as LinkIcon, Settings } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -26,10 +21,10 @@ interface UserProfile {
   posts: Post[];
 }
 
-export default function PublicProfilePage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export default function PublicProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
 }) {
   const [id, setId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -42,7 +37,7 @@ export default function PublicProfilePage({
       try {
         const resolvedParams = await params;
         setId(resolvedParams.id);
-      } catch (err) {
+      } catch (_err) {
         setError("Failed to load profile parameters");
         setLoading(false);
       }
@@ -63,9 +58,9 @@ export default function PublicProfilePage({
         }
         const data = await res.json();
         setUserProfile(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
+      } catch (_err) {
+        if (_err instanceof Error) {
+          setError(_err.message);
         } else {
           setError("An unknown error occurred.");
         }
@@ -77,8 +72,17 @@ export default function PublicProfilePage({
     fetchUserProfile();
   }, [id]);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   if (loading) {
-    return <div>Loading profile...</div>;
+    return (
+      <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
+        <h1 className="text-2xl font-bold mb-2">Hello, world!</h1>
+        <p className="text-muted-foreground">
+          This is a simple animated component using Tailwind CSS.
+        </p>
+      </div>
+    );
   }
 
   if (error) {
@@ -89,9 +93,13 @@ export default function PublicProfilePage({
     return <div>Profile not found.</div>;
   }
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+  
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header toggleMenu={toggleMenu} />
 
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
@@ -113,9 +121,7 @@ export default function PublicProfilePage({
 
                   {/* Basic Info */}
                   <div className="space-y-2">
-                    <h1 className="text-2xl font-bold">
-                      {userProfile.name}
-                    </h1>
+                    <h1 className="text-2xl font-bold">{userProfile.name}</h1>
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
                         @{userProfile.username || "No username set yet"}
@@ -130,17 +136,22 @@ export default function PublicProfilePage({
 
               {/* Bio */}
               <div className="mt-4 space-y-4">
-                <p className="text-foreground/90">{userProfile.bio || "No bio available."}</p>
+                <p className="text-foreground/90">
+                  {userProfile.bio || "No bio available."}
+                </p>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     <span>
                       Joined{" "}
-                      {new Date(userProfile.createdAt).toLocaleDateString("en-US", {
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {new Date(userProfile.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -168,7 +179,9 @@ export default function PublicProfilePage({
                     </span>
                   </div>
                   <div>
-                    <span className="font-bold">{userProfile.posts.length}</span>
+                    <span className="font-bold">
+                      {userProfile.posts.length}
+                    </span>
                     <span className="text-muted-foreground ml-1">Posts</span>
                   </div>
                 </div>
@@ -191,9 +204,7 @@ export default function PublicProfilePage({
                 ))
               ) : (
                 <div className="text-center py-12 bg-card border border-border rounded-xl">
-                  <p className="text-muted-foreground">
-                    No posts yet.
-                  </p>
+                  <p className="text-muted-foreground">No posts yet.</p>
                 </div>
               )}
             </TabsContent>

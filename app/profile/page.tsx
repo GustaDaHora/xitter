@@ -38,6 +38,12 @@ export default function Profile() {
     }
   }, [session]);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -92,7 +98,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header toggleMenu={toggleMenu} />
 
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
@@ -132,7 +138,7 @@ export default function Profile() {
                     )}
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
-                        @{session.user.email}
+                        @{session.user.username}
                       </span>
                       {session.user.iqScore && (
                         <IQBadge iq={session.user.iqScore} showCategory />
