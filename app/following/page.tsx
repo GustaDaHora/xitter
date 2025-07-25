@@ -38,15 +38,21 @@ export default function Following() {
     fetchFollowingPosts();
   }, [sortOption, session]);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   if (!session) {
     return <div>Please sign in to view posts from followed users.</div>;
   }
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header toggleMenu={toggleMenu} />
       <div className="flex">
-        <Sidebar />
+        <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
 
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
