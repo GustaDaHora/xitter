@@ -15,6 +15,7 @@ import { IQBadge } from "../ui/iq-badge";
 import { cn, formatDate, calculateReadTime } from "@/lib/utils";
 import { Post } from "@/types";
 import { useRouter } from "next/navigation";
+import { censorText } from "@/lib/censor";
 
 interface PostCardProps {
   post: Post;
@@ -38,7 +39,7 @@ export function PostCard({
   isPreview = true,
   onLikeToggle,
 }: PostCardProps) {
-  const { data: session } = useSession();
+  const { status } = useSession();
   const [currentLikes, setCurrentLikes] = useState(post.likesCount);
   const [isLiked, setIsLiked] = useState(post.isLikedByCurrentUser || false);
 
@@ -48,7 +49,7 @@ export function PostCard({
   }, [post.likesCount, post.isLikedByCurrentUser]);
 
   const handleLike = async () => {
-    if (!session) {
+    if (status !== "authenticated") {
       alert("You need to be logged in to like a post.");
       return;
     }
@@ -79,9 +80,12 @@ export function PostCard({
     }
   };
 
-  const displayContent = isPreview
+  const rawContent = isPreview
     ? truncateContent(post.content, 420)
     : post.content;
+
+  const displayContent =
+    status === "authenticated" ? rawContent : censorText(rawContent);
 
   const postUrl = `/post/${post.id}`;
   const router = useRouter();
@@ -91,6 +95,49 @@ export function PostCard({
       router.push(postUrl);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <article className="relative group bg-card border border-border rounded-xl p-6 hover:shadow-card transition-all duration-300 cursor-pointer">
+        <div className="relative z-10 animate-pulse">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3 z-30">
+              <div className="w-12 h-12 rounded-full bg-muted"></div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="h-5 w-24 bg-muted rounded"></div>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                  <div className="h-4 w-32 bg-muted rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="space-y-3">
+            <div className="h-6 w-3/4 bg-muted rounded"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded"></div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-border z-30 relative">
+            <div className="flex items-center gap-6">
+              <div className="h-8 w-16 bg-muted rounded"></div>
+              <div className="h-8 w-16 bg-muted rounded"></div>
+              <div className="h-8 w-16 bg-muted rounded"></div>
+            </div>
+            <div className="h-8 w-8 bg-muted rounded"></div>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article
