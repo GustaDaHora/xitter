@@ -3,16 +3,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-  Brain,
-  Mail,
-  Lock,
-  Chrome,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { Brain, Mail, Lock, Chrome, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -22,16 +15,19 @@ export default function Login() {
     displayName: "",
   });
 
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isSignUp) {
       // Handle Sign Up
       try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
+        const res = await fetch("/api/register", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             name: formData.displayName,
@@ -41,20 +37,20 @@ export default function Login() {
         });
 
         if (res.ok) {
-          alert('Account created successfully! Please sign in.');
+          alert("Account created successfully! Please sign in.");
           setIsSignUp(false); // Switch to sign-in form after successful registration
-          setFormData({ ...formData, password: '' }); // Clear password field
+          setFormData({ ...formData, password: "" }); // Clear password field
         } else {
           const errorData = await res.json();
           alert(`Registration failed: ${errorData.error}`);
         }
       } catch (error) {
-        console.error('Error during registration:', error);
-        alert('An unexpected error occurred during registration.');
+        console.error("Error during registration:", error);
+        alert("An unexpected error occurred during registration.");
       }
     } else {
       // Handle Sign In
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         redirect: false,
         email: formData.email,
         password: formData.password,
@@ -64,7 +60,7 @@ export default function Login() {
         alert(result.error);
       } else {
         // Redirect to home or dashboard after successful login
-        window.location.href = '/';
+        window.location.href = "/";
       }
     }
   };
@@ -83,6 +79,22 @@ export default function Login() {
       provider: "google",
     },
   ];
+
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">You are already logged in</h1>
+          <p className="text-muted-foreground mt-2">
+            Welcome back, {session.user?.name || "User"}!
+          </p>
+          <Link href="/" className="text-primary hover:underline mt-4">
+            Go to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
