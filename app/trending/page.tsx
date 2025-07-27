@@ -1,12 +1,11 @@
 "use client";
 
-import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PostCard } from "@/components/feed/post-card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Post } from "@/types";
-import { TrendingUp, Flame, Zap, Star } from "lucide-react";
+import { TrendingUp, Flame, Zap } from "lucide-react";
 
 export default function Trending() {
   const [trendingPosts, setTrendingPosts] = useState<Post[]>([]);
@@ -52,7 +51,6 @@ export default function Trending() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
       <div className="flex">
       <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
 

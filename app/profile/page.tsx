@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/components/layout/header";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,12 +36,6 @@ export default function Profile() {
       });
     }
   }, [session]);
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -98,8 +91,6 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
-
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Profile Header */}

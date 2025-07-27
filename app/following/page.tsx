@@ -1,6 +1,5 @@
 "use client";
-import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
+
 import { PostCard } from "@/components/feed/post-card";
 import { SortControls } from "@/components/feed/sort-controls";
 import { Post, SortOption } from "@/types";
@@ -38,22 +37,13 @@ export default function Following() {
     fetchFollowingPosts();
   }, [sortOption, session]);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   if (!session) {
     return <div>Please sign in to view posts from followed users.</div>;
   }
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
       <div className="flex">
-        <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
-
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
             <div className="space-y-4">

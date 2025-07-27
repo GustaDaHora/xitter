@@ -1,9 +1,9 @@
-"use client"
-import { Header } from "@/components/layout/header";
+"use client";
+
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from 'react';
-import { User } from '@/types';
+import { useEffect, useState } from "react";
+import { User } from "@/types";
 import { Trophy, Medal, Award, Brain, Zap, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,16 +26,11 @@ export default function Leaderboard() {
   const [leaderboardUsers, setLeaderboardUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-  
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await fetch('/api/leaderboard');
+        const res = await fetch("/api/leaderboard");
         if (!res.ok) {
           throw new Error(`Error: ${res.status} ${res.statusText}`);
         }
@@ -65,8 +60,6 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
-
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
@@ -163,9 +156,7 @@ export default function Leaderboard() {
 
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">
-                              {user.name}
-                            </h3>
+                            <h3 className="font-semibold">{user.name}</h3>
                             {isTop3 && (
                               <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
                                 TOP 3
@@ -180,7 +171,9 @@ export default function Leaderboard() {
 
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          {user.iqScore && <IQBadge iq={user.iqScore} showCategory />}
+                          {user.iqScore && (
+                            <IQBadge iq={user.iqScore} showCategory />
+                          )}
                           <p className="text-xs text-muted-foreground mt-1">
                             {/* {user.followersCount.toLocaleString()} followers */}
                           </p>

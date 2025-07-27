@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Header } from "@/components/layout/header";
 import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
@@ -166,12 +165,6 @@ export default function PostDetail() {
     }
   };
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   if (loading) {
     return (
       <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
@@ -186,7 +179,6 @@ export default function PostDetail() {
   if (error) {
     return (
       <div className="min-h-screen bg-background">
-        <Header toggleMenu={toggleMenu} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4 text-destructive">Error</h1>
@@ -203,7 +195,6 @@ export default function PostDetail() {
   if (!post) {
     return (
       <div className="min-h-screen bg-background">
-        <Header toggleMenu={toggleMenu} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Post not found</h1>
@@ -218,8 +209,6 @@ export default function PostDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
-
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Back Button */}
