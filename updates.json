@@ -1,0 +1,12 @@
+[
+  {
+    "date": "July 26, 2025",
+    "updates": [
+      "Added a new What's new? page to display the latest updates.",
+      "Added roblox censor.",
+      "Added a loading state to the post card to improve the user experience.",
+      "Now if you go to /login, you will be redirected to the home page if you are already logged in.",
+      "Fixed duplicated header on /following, /trending and /leaderboard."
+    ]
+  }
+]

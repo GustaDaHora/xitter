@@ -5,7 +5,7 @@ import { IQBadge } from "@/components/ui/iq-badge";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { User } from "@/types";
-import { Home, Trophy, Users, TrendingUp, Bookmark, Plus, X } from "lucide-react";
+import { Home, Trophy, Users, TrendingUp, Bookmark, Plus, X, Newspaper } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ const navigation = [
   { name: "Following", href: "/following", icon: Users },
   { name: "Trending", href: "/trending", icon: TrendingUp },
   { name: "Bookmarks", href: "/bookmarks", icon: Bookmark },
+  { name: "What's new?", href: "/whats-new", icon: Newspaper },
 ];
 
 export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggleMenu: () => void }) {
@@ -106,13 +107,13 @@ export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggl
                   {user.name ? user.name[0] : "U"}
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-baseline gap-7 mb-1">
                     <p className="font-medium truncate">{user.name}</p>
                     <Button size="thin" variant="outline">
                       Follow
                     </Button>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-baseline gap-13">
                     <span className="text-sm text-muted-foreground">
                       @{user.username || user.email}
                     </span>
