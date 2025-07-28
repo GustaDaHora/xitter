@@ -39,7 +39,7 @@ export function PostCard({
   isPreview = true,
   onLikeToggle,
 }: PostCardProps) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [currentLikes, setCurrentLikes] = useState(post.likesCount);
   const [isLiked, setIsLiked] = useState(post.isLikedByCurrentUser || false);
 
@@ -54,8 +54,14 @@ export function PostCard({
       return;
     }
 
+    const originalIsLiked = isLiked;
+
+    // Optimistic update
+    setIsLiked(!originalIsLiked);
+    setCurrentLikes((prev) => (originalIsLiked ? prev - 1 : prev + 1));
+
     try {
-      const method = isLiked ? "DELETE" : "POST";
+      const method = !originalIsLiked ? "POST" : "DELETE";
       const res = await fetch(`/api/posts/${post.id}/like`, {
         method,
         headers: {
@@ -64,17 +70,18 @@ export function PostCard({
       });
 
       if (res.ok) {
-        const data = await res.json();
-        setIsLiked(!isLiked);
-        setCurrentLikes(data.likes); // Use the actual count from the server
         if (onLikeToggle) {
-          onLikeToggle(post.id, !isLiked);
+          onLikeToggle(post.id, !originalIsLiked);
         }
       } else {
-        const errorData = await res.json();
-        alert(`Failed to toggle like: ${errorData.error}`);
+        // Revert on API error
+        setIsLiked(originalIsLiked);
+        setCurrentLikes((prev) => (originalIsLiked ? prev + 1 : prev - 1));
       }
     } catch (error) {
+      // Revert on network error
+      setIsLiked(originalIsLiked);
+      setCurrentLikes((prev) => (originalIsLiked ? prev + 1 : prev - 1));
       console.error("Error toggling like:", error);
       alert("An unexpected error occurred while toggling like.");
     }
@@ -234,7 +241,7 @@ export function PostCard({
               onClick={(e) => e.stopPropagation()}
             >
               <Repeat2 className="h-4 w-4" />
-              <span>42</span>
+              <span>0</span>
             </Button>
           </div>
 
