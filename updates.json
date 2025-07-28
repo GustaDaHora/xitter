@@ -1,5 +1,12 @@
 [
   {
+    "date": "July 27, 2025",
+    "updates": [
+      "Improved the roblox censor to handle more cases.",
+      "Fixed unresponsive like button on post cards."
+    ]
+  },
+  {
     "date": "July 26, 2025",
     "updates": [
       "Added a new What's new? page to display the latest updates.",
