@@ -10,6 +10,9 @@ export async function GET(req: Request) {
   const limit = parseInt(searchParams.get('limit') || '10')
   const sortBy = searchParams.get('sortBy') || 'recent' // 'recent', 'highestIQ', 'lowestIQ'
 
+  const session = await getServerSession(authOptions)
+  const userId = session?.user?.id
+
   type OrderBy = {
     createdAt?: 'desc';
     author?: {
@@ -36,14 +39,27 @@ export async function GET(req: Request) {
         comments: {
           select: { id: true }, // Only select id to get the count
         },
+        likes: {
+          where: {
+            userId: userId || '',
+          },
+          select: {
+            userId: true,
+          },
+        },
       },
     })
+
+    const postsWithLikeStatus = posts.map(post => ({
+      ...post,
+      isLikedByCurrentUser: post.likes.length > 0,
+    }));
 
     const hasNextPage = posts.length > limit
     const nextCursor = hasNextPage ? posts[limit].id : null
 
     return NextResponse.json({
-      posts: posts.slice(0, limit),
+      posts: postsWithLikeStatus.slice(0, limit),
       hasNextPage,
       nextCursor,
     })
