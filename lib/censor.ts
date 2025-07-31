@@ -49,5 +49,5 @@ export function censorText(text: string): string {
     return "";
   }
 
-  return text.replace(badWordsRegex, (match) => "Vampeta".repeat(match.length));
+  return text.replace(badWordsRegex, (match) => "Vampeta");
 }
