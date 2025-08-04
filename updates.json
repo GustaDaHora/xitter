@@ -1,5 +1,11 @@
 [
   {
+    "date": "August 4, 2025",
+    "updates": [
+      "Added 404 and 500 pages."
+    ]
+  },
+  {
     "date": "July 27, 2025",
     "updates": [
       "Improved the roblox censor to handle more cases.",
