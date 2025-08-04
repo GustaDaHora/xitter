@@ -1,5 +1,11 @@
 [
   {
+    "date": "August 4, 2025",
+    "updates": [
+      "Added 404 and 500 error pages."
+    ]
+  },
+  {
     "date": "July 30, 2025",
     "updates": [
       "Changed roblox censor to Vampeta censor."
