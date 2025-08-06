@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/components/layout/header";
 import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
@@ -70,8 +69,6 @@ export default function PublicProfilePage({
     fetchUserProfile();
   }, [id]);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   if (loading) {
     return (
       <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
@@ -91,14 +88,8 @@ export default function PublicProfilePage({
     return <div>Profile not found.</div>;
   }
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      <Header toggleMenu={toggleMenu} />
-
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Profile Header */}
