@@ -17,7 +17,6 @@ This is a fullstack parody of X (formerly Twitter), designed to showcase both te
    ```
 
 3. **Set up the database:**
-
    - Create a PostgreSQL database.
    - Copy the `.env.example` file to `.env` and fill in the database URL and other environment variables.
 
