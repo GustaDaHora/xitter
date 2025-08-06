@@ -1,5 +1,12 @@
 [
   {
+    "date": "August 8, 2025",
+    "updates": [
+      "Added prettier to the project for consistent code formatting.",
+      "Added README.md file with project details."
+    ]  
+  },
+  {
     "date": "August 4, 2025",
     "updates": ["Added 404 and 500 error pages."]
   },
