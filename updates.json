@@ -1,10 +1,17 @@
 [
   {
-    "date": "August 8, 2025",
+    "date": "August 6, 2025",
+    "updates": [
+      "Added redis for caching posts to improve performance and reduce database load.",
+      "Fixed duped header in profile page."
+    ]
+  },
+  {
+    "date": "August 5, 2025",
     "updates": [
       "Added prettier to the project for consistent code formatting.",
       "Added README.md file with project details."
-    ]  
+    ]
   },
   {
     "date": "August 4, 2025",
