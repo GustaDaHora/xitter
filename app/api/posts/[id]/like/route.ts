@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth-options";
 
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -17,7 +17,6 @@ export async function POST(
   const userId = session.user.id;
 
   try {
-    // Check if the user has already liked the post
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_postId: {
@@ -30,13 +29,11 @@ export async function POST(
     if (existingLike) {
       return NextResponse.json(
         { message: "Post already liked" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
-    // Use a transaction to ensure data consistency
     const result = await prisma.$transaction(async (tx) => {
-      // Create the like
       await tx.like.create({
         data: {
           userId,
@@ -44,7 +41,6 @@ export async function POST(
         },
       });
 
-      // Update the post's likesCount
       const updatedPost = await tx.post.update({
         where: { id },
         data: {
@@ -69,7 +65,7 @@ export async function POST(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -81,7 +77,6 @@ export async function DELETE(
   const userId = session.user.id;
 
   try {
-    // Check if the user has liked the post
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_postId: {
@@ -95,9 +90,7 @@ export async function DELETE(
       return NextResponse.json({ message: "Post not liked" }, { status: 200 });
     }
 
-    // Use a transaction to ensure data consistency
     const result = await prisma.$transaction(async (tx) => {
-      // Delete the like
       await tx.like.delete({
         where: {
           userId_postId: {
@@ -107,7 +100,6 @@ export async function DELETE(
         },
       });
 
-      // Update the post's likesCount
       const updatedPost = await tx.post.update({
         where: { id },
         data: {
@@ -128,7 +120,7 @@ export async function DELETE(
     console.error("Error unliking post:", error);
     return NextResponse.json(
       { error: "Failed to unlike post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

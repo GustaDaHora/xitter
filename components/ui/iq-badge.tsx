@@ -16,7 +16,7 @@ export function IQBadge({
   className,
 }: IQBadgeProps) {
   const getIcon = (
-    iq: number | undefined
+    iq: number | undefined,
   ): React.FC<{ className?: string }> | undefined => {
     if (iq == undefined) return;
     if (iq >= 180) return Brain;
@@ -48,7 +48,7 @@ export function IQBadge({
         "hover:shadow-glow hover:scale-105",
         sizeClasses[size],
         getIQColor(iq),
-        className
+        className,
       )}
     >
       {Icon && <Icon className={iconSizes[size]} />} {/* <- Safe check here */}

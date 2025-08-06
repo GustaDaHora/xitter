@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ commentId: string }> }
+  context: { params: Promise<{ commentId: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -30,7 +30,7 @@ export async function PUT(
     if (comment.authorId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to update this comment" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -46,14 +46,14 @@ export async function PUT(
     console.error("Error updating comment:", error);
     return NextResponse.json(
       { error: "Failed to update comment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ commentId: string }> }
+  context: { params: Promise<{ commentId: string }> },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -76,7 +76,7 @@ export async function DELETE(
     if (comment.authorId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to delete this comment" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -89,7 +89,7 @@ export async function DELETE(
     console.error("Error deleting comment:", error);
     return NextResponse.json(
       { error: "Failed to delete comment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

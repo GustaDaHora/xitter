@@ -11,7 +11,12 @@
   },
   {
     "question": "A is the father of B. But B is not the son of A. How is that possible?",
-    "options": ["B is A's nephew", "B is A's daughter", "A is B's uncle", "None of the above"],
+    "options": [
+      "B is A's nephew",
+      "B is A's daughter",
+      "A is B's uncle",
+      "None of the above"
+    ],
     "answer": "B is A's daughter"
   },
   {

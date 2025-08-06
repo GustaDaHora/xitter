@@ -91,7 +91,7 @@ export default function Leaderboard() {
                   key={user.id}
                   className={cn(
                     "bg-gradient-card border border-border rounded-xl p-6 text-center space-y-4 transition-all duration-300 hover:shadow-elegant",
-                    isFirst && "md:order-2 scale-105 ring-2 ring-primary/50"
+                    isFirst && "md:order-2 scale-105 ring-2 ring-primary/50",
                   )}
                 >
                   <div className="flex justify-center">{getRankIcon(rank)}</div>
@@ -135,7 +135,7 @@ export default function Leaderboard() {
                     key={user.id}
                     className={cn(
                       "p-6 hover:bg-muted/50 transition-colors",
-                      isTop3 && "bg-primary/5"
+                      isTop3 && "bg-primary/5",
                     )}
                   >
                     <div className="flex items-center justify-between">

@@ -54,7 +54,7 @@ model User {
   bio                 String?
   iqScore             Int?
   iqTestDate          DateTime?
-  password            String? // Added for credentials provider
+  password            String?
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -84,7 +84,6 @@ model IQTestSubmission {
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   score       Int
   submittedAt DateTime   @default(now())
-  duration    Int? // Optional: if you want to track how long it took
 }
 
 model Post {
@@ -93,11 +92,11 @@ model Post {
   content     String     @db.VarChar(420)
   createdAt   DateTime   @default(now())
   views       Int        @default(0)
-  likesCount  Int        @default(0) // Renamed to avoid conflict
+  likesCount  Int        @default(0)
   authorId    String
   author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments    Comment[]
-  likes       Like[] // This is the relation to the Like model
+  likes       Like[]
 }
 
 model Comment {

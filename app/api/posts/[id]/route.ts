@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth-options";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -48,14 +48,14 @@ export async function GET(
     console.error("Error fetching post:", error);
     return NextResponse.json(
       { error: "Failed to fetch post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
   const session = await getServerSession(authOptions);
@@ -79,7 +79,7 @@ export async function PUT(
     if (post.authorId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to update this post" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -96,14 +96,14 @@ export async function PUT(
     console.error("Error updating post:", error);
     return NextResponse.json(
       { error: "Failed to update post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -127,7 +127,7 @@ export async function DELETE(
     if (post.authorId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to delete this post" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -140,7 +140,7 @@ export async function DELETE(
     console.error("Error deleting post:", error);
     return NextResponse.json(
       { error: "Failed to delete post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -20,12 +20,9 @@ export default function Following() {
       }
       setLoading(true);
       try {
-        // Assuming you have an API endpoint for fetching posts from followed users
-        // For now, we'll fetch all posts and filter them (this is not efficient for large datasets)
-        // A proper backend implementation would filter at the database level.
         const res = await fetch(`/api/posts?sortBy=${sortOption}`);
         const data = await res.json();
-        // In a real app, you'd filter by followed users here or have a dedicated API
+
         setFollowingPosts(data.posts);
       } catch (error) {
         console.error("Failed to fetch following posts:", error);
@@ -78,8 +75,8 @@ export default function Following() {
                                   : p.likesCount - 1,
                                 isLikedByCurrentUser: isLiked,
                               }
-                            : p
-                        )
+                            : p,
+                        ),
                       );
                     }}
                   />

@@ -29,7 +29,7 @@ export function SortControls({ currentSort, onSortChange }: SortControlsProps) {
           className={cn(
             "gap-2 transition-all duration-200",
             currentSort === option.key &&
-              "bg-primary/10 text-primary border border-primary/20"
+              "bg-primary/10 text-primary border border-primary/20",
           )}
         >
           <option.icon className="h-4 w-4" />

@@ -25,7 +25,7 @@ interface PostCardProps {
 
 const truncateContent = (
   text: string | undefined | null,
-  maxLength: number
+  maxLength: number,
 ) => {
   if (!text) return "";
   if (text.length <= maxLength) {
@@ -56,7 +56,6 @@ export function PostCard({
 
     const originalIsLiked = isLiked;
 
-    // Optimistic update
     setIsLiked(!originalIsLiked);
     setCurrentLikes((prev) => (originalIsLiked ? prev - 1 : prev + 1));
 
@@ -74,12 +73,10 @@ export function PostCard({
           onLikeToggle(post.id, !originalIsLiked);
         }
       } else {
-        // Revert on API error
         setIsLiked(originalIsLiked);
         setCurrentLikes((prev) => (originalIsLiked ? prev + 1 : prev - 1));
       }
     } catch (error) {
-      // Revert on network error
       setIsLiked(originalIsLiked);
       setCurrentLikes((prev) => (originalIsLiked ? prev + 1 : prev - 1));
       console.error("Error toggling like:", error);
@@ -97,7 +94,6 @@ export function PostCard({
   const postUrl = `/post/${post.id}`;
   const router = useRouter();
   const handleCardClick = (e: React.MouseEvent) => {
-    // Only navigate if we didn't click on an interactive element
     if (!(e.target as Element).closest("button")) {
       router.push(postUrl);
     }
@@ -195,7 +191,7 @@ export function PostCard({
           <h2
             className={cn(
               "text-xl font-bold leading-tight",
-              isPreview && "hover:text-primary transition-colors"
+              isPreview && "hover:text-primary transition-colors",
             )}
           >
             {truncateContent(post.title, 69)}
@@ -216,7 +212,7 @@ export function PostCard({
                 "gap-2 transition-all duration-200",
                 isLiked
                   ? "text-destructive hover:text-destructive"
-                  : "hover:text-destructive"
+                  : "hover:text-destructive",
               )}
               onClick={handleLike}
             >

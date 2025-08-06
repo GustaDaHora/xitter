@@ -22,7 +22,6 @@ export default function Login() {
     e.preventDefault();
 
     if (isSignUp) {
-      // Handle Sign Up
       try {
         const res = await fetch("/api/register", {
           method: "POST",
@@ -38,8 +37,8 @@ export default function Login() {
 
         if (res.ok) {
           alert("Account created successfully! Please sign in.");
-          setIsSignUp(false); // Switch to sign-in form after successful registration
-          setFormData({ ...formData, password: "" }); // Clear password field
+          setIsSignUp(false);
+          setFormData({ ...formData, password: "" });
         } else {
           const errorData = await res.json();
           alert(`Registration failed: ${errorData.error}`);
@@ -49,7 +48,6 @@ export default function Login() {
         alert("An unexpected error occurred during registration.");
       }
     } else {
-      // Handle Sign In
       const result = await signIn("credentials", {
         redirect: false,
         email: formData.email,
@@ -59,7 +57,6 @@ export default function Login() {
       if (result?.error) {
         alert(result.error);
       } else {
-        // Redirect to home or dashboard after successful login
         window.location.href = "/";
       }
     }

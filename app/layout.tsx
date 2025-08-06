@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     icon: "/favicon.png",
     apple: "/favicon.png",
     shortcut: "/favicon.png",
-  }
+  },
 };
 
 export const viewport: Viewport = {

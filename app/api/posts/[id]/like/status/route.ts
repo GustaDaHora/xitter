@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
   const { searchParams } = new URL(req.url);
@@ -28,7 +28,7 @@ export async function GET(
     console.error("Error checking like status:", error);
     return NextResponse.json(
       { error: "Failed to check like status" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

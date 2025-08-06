@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
     "db:cleanup": "npx ts-node scripts/cleanup.ts"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.2",
+    "prettier": "3.6.2",
     "tailwindcss": "^4.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5"

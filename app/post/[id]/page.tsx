@@ -43,7 +43,6 @@ export default function PostDetail() {
     fetchPost();
   }, [id, session]);
 
-  // Handle post like toggle
   const handlePostLike = async () => {
     if (!session) {
       alert("You need to be logged in to like a post.");
@@ -67,7 +66,7 @@ export default function PostDetail() {
           if (!prevPost) return null;
           return {
             ...prevPost,
-            likesCount: data.likes, // Use the actual count from server response
+            likesCount: data.likes,
             isLikedByCurrentUser: !prevPost.isLikedByCurrentUser,
           };
         });
@@ -81,7 +80,6 @@ export default function PostDetail() {
     }
   };
 
-  // Handle comment like toggle
   const handleCommentLike = async (commentId: string) => {
     if (!session) {
       alert("You need to be logged in to like a comment.");
@@ -112,10 +110,10 @@ export default function PostDetail() {
               c.id === commentId
                 ? {
                     ...c,
-                    likesCount: data.likes, // Use actual count from server
+                    likesCount: data.likes,
                     isLikedByCurrentUser: !c.isLikedByCurrentUser,
                   }
-                : c
+                : c,
             ),
           };
         });
@@ -151,7 +149,6 @@ export default function PostDetail() {
 
       if (res.ok) {
         setNewComment("");
-        // Re-fetch post to get the new comment
         const updatedRes = await fetch(`/api/posts/${post?.id}`);
         const updatedData = await updatedRes.json();
         setPost(updatedData);
@@ -317,13 +314,13 @@ export default function PostDetail() {
                             "gap-2 text-sm transition-all duration-200",
                             comment.isLikedByCurrentUser
                               ? "text-destructive"
-                              : "hover:text-destructive"
+                              : "hover:text-destructive",
                           )}
                         >
                           <Heart
                             className={cn(
                               "h-4 w-4",
-                              comment.isLikedByCurrentUser && "fill-current"
+                              comment.isLikedByCurrentUser && "fill-current",
                             )}
                           />
                           <span>{comment.likesCount || 0}</span>

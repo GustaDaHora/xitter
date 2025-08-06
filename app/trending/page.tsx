@@ -15,7 +15,7 @@ export default function Trending() {
     const fetchTrendingPosts = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/posts"); // Fetch all posts
+        const res = await fetch("/api/posts");
         const data = await res.json();
         const sorted = [...data.posts].sort((a: Post, b: Post) => {
           const aEngagement = a.likesCount + a.comments.length;
@@ -52,7 +52,7 @@ export default function Trending() {
   return (
     <div className="min-h-screen bg-background">
       <div className="flex">
-      <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
+        <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
 
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
@@ -88,8 +88,8 @@ export default function Trending() {
                                   : p.likesCount - 1,
                                 isLikedByCurrentUser: isLiked,
                               }
-                            : p
-                        )
+                            : p,
+                        ),
                       );
                     }}
                   />

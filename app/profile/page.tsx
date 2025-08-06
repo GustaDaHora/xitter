@@ -60,7 +60,6 @@ export default function Profile() {
       });
 
       if (res.ok) {
-        // Refresh the session to reflect updated user data
         update({
           name: editForm.displayName,
           email: editForm.email,
@@ -195,7 +194,7 @@ export default function Profile() {
                             {
                               month: "long",
                               year: "numeric",
-                            }
+                            },
                           )
                         : "Date unknown"}
                     </span>

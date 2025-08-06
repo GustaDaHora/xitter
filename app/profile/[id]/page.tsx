@@ -31,7 +31,6 @@ export default function PublicProfilePage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Resolve params promise
   useEffect(() => {
     const resolveParams = async () => {
       try {
@@ -46,7 +45,6 @@ export default function PublicProfilePage({
     resolveParams();
   }, [params]);
 
-  // Fetch user profile once id is available
   useEffect(() => {
     if (!id) return;
 
@@ -96,7 +94,7 @@ export default function PublicProfilePage({
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  
+
   return (
     <div className="min-h-screen bg-background">
       <Header toggleMenu={toggleMenu} />
@@ -150,7 +148,7 @@ export default function PublicProfilePage({
                         {
                           month: "long",
                           year: "numeric",
-                        }
+                        },
                       )}
                     </span>
                   </div>

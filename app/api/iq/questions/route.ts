@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
-import questions from '@/lib/iq-questions.json'
+import { NextResponse } from "next/server";
+import questions from "@/lib/iq-questions.json";
 
 export async function GET() {
-  return NextResponse.json(questions)
+  return NextResponse.json(questions);
 }

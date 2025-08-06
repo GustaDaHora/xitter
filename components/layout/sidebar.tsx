@@ -5,7 +5,16 @@ import { IQBadge } from "@/components/ui/iq-badge";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { User } from "@/types";
-import { Home, Trophy, Users, TrendingUp, Bookmark, Plus, X, Newspaper } from "lucide-react";
+import {
+  Home,
+  Trophy,
+  Users,
+  TrendingUp,
+  Bookmark,
+  Plus,
+  X,
+  Newspaper,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -19,7 +28,13 @@ const navigation = [
   { name: "What's new?", href: "/whats-new", icon: Newspaper },
 ];
 
-export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggleMenu: () => void }) {
+export function Sidebar({
+  isMenuOpen,
+  toggleMenu,
+}: {
+  isMenuOpen: boolean;
+  toggleMenu: () => void;
+}) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [suggestedUsers, setSuggestedUsers] = useState<User[]>([]);
@@ -28,7 +43,7 @@ export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggl
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const res = await fetch("/api/leaderboard?limit=3"); // Fetch top 3 users
+        const res = await fetch("/api/leaderboard?limit=3");
         const data = await res.json();
         setSuggestedUsers(data.leaderboard);
       } catch (error) {
@@ -58,7 +73,7 @@ export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggl
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-20 h-full w-72 transform border-r border-border bg-card p-4 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
-        isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        isMenuOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >
       <div className="flex items-center justify-between md:hidden">
@@ -78,7 +93,7 @@ export function Sidebar({ isMenuOpen, toggleMenu }: { isMenuOpen: boolean, toggl
               className={cn(
                 "w-full justify-start gap-3 h-12",
                 isActive &&
-                  "bg-primary/10 text-primary border border-primary/20"
+                  "bg-primary/10 text-primary border border-primary/20",
               )}
             >
               <Link href={item.href}>

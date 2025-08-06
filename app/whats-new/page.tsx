@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 interface Update {
   date: string;
@@ -7,8 +7,8 @@ interface Update {
 }
 
 const WhatsNewPage = () => {
-  const filePath = path.join(process.cwd(), 'updates.json');
-  const fileContents = fs.readFileSync(filePath, 'utf8');
+  const filePath = path.join(process.cwd(), "updates.json");
+  const fileContents = fs.readFileSync(filePath, "utf8");
   const updates: Update[] = JSON.parse(fileContents);
 
   return (

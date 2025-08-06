@@ -71,9 +71,8 @@
     --background-image-gradient-primary: var(--gradient-primary);
     --background-image-gradient-card: var(--gradient-card);
     --background-image-gradient-iq: var(--gradient-iq);
-    --bg-gradient-primary: var(--gradient-primary)
-    /* Animations */
-    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --bg-gradient-primary: var(--gradient-primary) /* Animations */
+      --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
   }
 
@@ -144,7 +143,9 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

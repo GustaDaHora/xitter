@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getIQColor = (iq: number | undefined): string => {
-  if (iq == undefined) return("text-iq-low") ;
+  if (iq == undefined) return "text-iq-low";
   if (iq >= 180) return "text-iq-genius";
   if (iq >= 140) return "text-iq-high";
   if (iq >= 100) return "text-iq-average";
@@ -14,7 +14,7 @@ export const getIQColor = (iq: number | undefined): string => {
 };
 
 export const getIQCategory = (iq: number | undefined): string => {
-  if (iq == undefined) return("LOW") ;
+  if (iq == undefined) return "LOW";
   if (iq >= 180) return "GENIUS";
   if (iq >= 140) return "HIGH";
   if (iq >= 100) return "AVERAGE";
@@ -39,5 +39,5 @@ export const calculateReadTime = (content: string): number => {
   const wordsPerMinute = 200;
   const wordCount = content.split(/\s+/).length;
   const readTime = Math.ceil(wordCount / wordsPerMinute);
-  return readTime === 0 ? 1 : readTime; // Ensure a minimum of 1 minute read time
+  return readTime === 0 ? 1 : readTime;
 };

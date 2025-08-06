@@ -32,15 +32,14 @@ export interface Comment {
   isLikedByCurrentUser?: boolean;
 }
 
-export type SortOption = 'recent' | 'popular' | 'controversial' | 'oldest';
+export type SortOption = "recent" | "popular" | "controversial" | "oldest";
 
 export interface IQTestResult {
   id: string;
   userId: string;
   score: number;
   completedAt: Date;
-  category: 'genius' | 'high' | 'average' | 'low';
+  category: "genius" | "high" | "average" | "low";
 }
 
-// For backward compatibility, you can also export this alias
 export type PostWithRelations = Post;

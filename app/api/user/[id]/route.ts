@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
 
@@ -37,7 +37,7 @@ export async function GET(
     console.error("Error fetching user profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch user profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
