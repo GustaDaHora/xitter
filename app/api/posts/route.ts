@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
+import redis from "@/lib/redis";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,6 +12,18 @@ export async function GET(req: Request) {
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+
+  const cacheKey = `posts:${sortBy}:${limit}:${cursor || ""}`;
+
+  try {
+    const cachedPosts = await redis.get(cacheKey);
+    if (cachedPosts) {
+      console.log(cachedPosts);
+      return NextResponse.json(JSON.parse(cachedPosts));
+    }
+  } catch (error) {
+    console.error("Redis error:", error);
+  }
 
   type OrderBy = {
     createdAt?: "desc";
@@ -63,11 +76,19 @@ export async function GET(req: Request) {
     const hasNextPage = posts.length > limit;
     const nextCursor = hasNextPage ? posts[limit].id : null;
 
-    return NextResponse.json({
+    const response = {
       posts: postsWithLikeStatus.slice(0, limit),
       hasNextPage,
       nextCursor,
-    });
+    };
+
+    try {
+      await redis.set(cacheKey, JSON.stringify(response), "EX", 60 * 5); // Cache for 5 minutes
+    } catch (error) {
+      console.error("Redis error:", error);
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching posts:", error);
     return NextResponse.json(
@@ -102,6 +123,16 @@ export async function POST(req: Request) {
         authorId,
       },
     });
+
+    try {
+      const keys = await redis.keys("posts:recent:*");
+      if (keys.length > 0) {
+        await redis.del(keys);
+      }
+    } catch (error) {
+      console.error("Redis error:", error);
+    }
+
     return NextResponse.json(newPost, { status: 201 });
   } catch (error) {
     console.error("Error creating post:", error);
