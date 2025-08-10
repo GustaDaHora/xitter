@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
+import redis from "@/lib/redis";
+import { NotificationType } from "@prisma/client";
 
 export async function GET(
   req: NextRequest,
@@ -56,13 +58,52 @@ export async function POST(
   }
 
   try {
-    const newComment = await prisma.comment.create({
-      data: {
-        content,
-        postId: id,
-        authorId,
-      },
+    const post = await prisma.post.findUnique({
+      where: { id },
+      select: { authorId: true },
     });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const newComment = await prisma.$transaction(async (tx) => {
+      const comment = await tx.comment.create({
+        data: {
+          content,
+          postId: id,
+          authorId,
+        },
+      });
+
+      if (post.authorId !== authorId) {
+        await tx.notification.create({
+          data: {
+            type: NotificationType.COMMENT,
+            recipientId: post.authorId,
+            actorId: authorId,
+            postId: id,
+          },
+        });
+
+        const streamKey = `notifications:${post.authorId}`;
+        await redis.xadd(
+          streamKey,
+          "*",
+          "type",
+          "COMMENT",
+          "actorId",
+          authorId,
+          "postId",
+          id,
+          "timestamp",
+          new Date().toISOString(),
+        );
+      }
+
+      return comment;
+    });
+
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
     console.error("Error creating comment:", error);
