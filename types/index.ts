@@ -16,7 +16,7 @@ export interface Post {
   author: User;
   createdAt: string;
   views: number;
-  likesCount: number; // Changed from 'likes' to match Prisma schema
+  likesCount: number;
   comments: Comment[];
   isLikedByCurrentUser?: boolean;
   readTime?: number;

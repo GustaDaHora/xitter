@@ -3,25 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
   directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -45,26 +45,29 @@ model VerificationToken {
 }
 
 model User {
-  id                  String     @id @default(cuid())
-  name                String?
-  email               String?    @unique
-  emailVerified       DateTime?
-  username            String?    @unique
-  image               String?
-  bio                 String?
-  iqScore             Int?
-  iqTestDate          DateTime?
-  password            String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  username      String?   @unique
+  image         String?
+  bio           String?
+  iqScore       Int?
+  iqTestDate    DateTime?
+  password      String?
 
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  accounts            Account[]
-  sessions            Session[]
-  posts               Post[]
-  comments            Comment[]
-  likes               Like[]
-  iqTestSubmissions   IQTestSubmission[]
+  accounts          Account[]
+  sessions          Session[]
+  posts             Post[]
+  comments          Comment[]
+  likes             Like[]
+  iqTestSubmissions IQTestSubmission[]
+
+  notifications     Notification[] @relation("notifications")
+  sentNotifications Notification[] @relation("sent_notifications")
 }
 
 model Like {
@@ -79,34 +82,57 @@ model Like {
 }
 
 model IQTestSubmission {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   score       Int
-  submittedAt DateTime   @default(now())
+  submittedAt DateTime @default(now())
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  title       String     @db.VarChar(69)
-  content     String     @db.VarChar(420)
-  createdAt   DateTime   @default(now())
-  views       Int        @default(0)
-  likesCount  Int        @default(0)
-  authorId    String
-  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  likes       Like[]
+  id           String    @id @default(cuid())
+  title        String    @db.VarChar(69)
+  content      String    @db.VarChar(420)
+  createdAt    DateTime  @default(now())
+  views        Int       @default(0)
+  likesCount   Int       @default(0)
+  authorId     String
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments     Comment[]
+  likes        Like[]
+  notifications Notification[]
 }
 
 model Comment {
-  id          String     @id @default(cuid())
-  content     String
-  createdAt   DateTime   @default(now())
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
 
-  authorId    String
-  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  read        Boolean   @default(false)
+
+  type        NotificationType
+
+  recipientId String
+  recipient   User             @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  actorId     String
+  actor       User             @relation("sent_notifications", fields: [actorId], references: [id], onDelete: Cascade)
 
   postId      String
-  post        Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post        Post             @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
