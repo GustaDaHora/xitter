@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/auth-options";
+import redis from "@/lib/redis";
+import { NotificationType } from "@prisma/client";
 
 export async function POST(
   req: NextRequest,
@@ -49,6 +51,31 @@ export async function POST(
           },
         },
       });
+
+      if (updatedPost.authorId !== userId) {
+        await tx.notification.create({
+          data: {
+            type: NotificationType.LIKE,
+            recipientId: updatedPost.authorId,
+            actorId: userId,
+            postId: id,
+          },
+        });
+
+        const streamKey = `notifications:${updatedPost.authorId}`;
+        await redis.xadd(
+          streamKey,
+          "*",
+          "type",
+          "LIKE",
+          "actorId",
+          userId,
+          "postId",
+          id,
+          "timestamp",
+          new Date().toISOString(),
+        );
+      }
 
       return updatedPost;
     });
