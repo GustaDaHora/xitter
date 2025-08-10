@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import NotificationListener from "./notification-listener";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 
@@ -15,12 +17,14 @@ export default function MainLayout({
   };
 
   return (
-    <div className="container mx-auto flex min-h-screen">
-      <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
-      <main className="flex-1 border-x">
-        <Header toggleMenu={toggleMenu} />
-        {children}
-      </main>
+    <div className="flex min-h-screen flex-col">
+      <Toaster position="bottom-center" />
+      <NotificationListener />
+      <Header toggleMenu={toggleMenu} />
+      <div className="flex flex-1">
+        <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
+        <main className="flex-1">{children}</main>
+      </div>
     </div>
   );
 }
