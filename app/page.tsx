@@ -57,7 +57,7 @@ export default function Home() {
       if (res.ok) {
         setNewPostTitle("");
         setNewPostContent("");
-        // Re-fetch posts to show the new one
+
         const updatedRes = await fetch(`/api/posts?sortBy=${sortOption}`);
         const updatedData = await updatedRes.json();
         setPosts(updatedData.posts);
