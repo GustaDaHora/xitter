@@ -1,6 +1,5 @@
 "use client";
 
-import { Sidebar } from "@/components/layout/sidebar";
 import { PostCard } from "@/components/feed/post-card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -32,12 +31,6 @@ export default function Trending() {
     fetchTrendingPosts();
   }, []);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   if (loading) {
     return (
       <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
@@ -52,8 +45,6 @@ export default function Trending() {
   return (
     <div className="min-h-screen bg-background">
       <div className="flex">
-        <Sidebar isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
-
         <main className="flex-1 min-h-screen border-r border-border">
           <div className="max-w-2xl mx-auto p-6 space-y-6">
             <div className="space-y-4">
