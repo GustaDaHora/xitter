@@ -1,5 +1,12 @@
 [
   {
+    "date": "August 13, 2025",
+    "updates": [
+      "Added a limit to name, username and email to 20, 30 and 50 characters respectively.",
+      "Fixed duped aside in treding page."
+    ]
+  },
+  {
     "date": "August 6, 2025",
     "updates": [
       "Added redis for caching posts to improve performance and reduce database load.",
