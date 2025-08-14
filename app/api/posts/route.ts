@@ -18,7 +18,6 @@ export async function GET(req: Request) {
   try {
     const cachedPosts = await redis.get(cacheKey);
     if (cachedPosts) {
-      console.log(cachedPosts);
       return NextResponse.json(JSON.parse(cachedPosts));
     }
   } catch (error) {
