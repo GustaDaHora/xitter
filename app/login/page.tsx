@@ -185,6 +185,7 @@ export default function Login() {
                   <Input
                     type="text"
                     placeholder="Your brilliant name"
+                    maxLength={20}
                     value={formData.displayName}
                     onChange={(e) =>
                       setFormData({ ...formData, displayName: e.target.value })
@@ -201,6 +202,7 @@ export default function Login() {
                   <Input
                     type="email"
                     placeholder="genius@example.com"
+                    maxLength={50}
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })

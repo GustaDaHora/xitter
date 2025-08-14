@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Post } from "@/types";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -237,8 +238,9 @@ export default function PostDetail() {
                     {session?.user?.name ? session.user.name[0] : "U"}
                   </div>
                   <div className="flex-1">
-                    <textarea
+                    <Textarea
                       value={newComment}
+                      maxLength={280}
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="Share your thoughts..."
                       className="w-full p-3 bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"

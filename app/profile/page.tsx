@@ -113,6 +113,7 @@ export default function Profile() {
                     {isEditing ? (
                       <Input
                         value={editForm.displayName}
+                        maxLength={20}
                         onChange={(e) =>
                           setEditForm({
                             ...editForm,
@@ -284,6 +285,7 @@ export default function Profile() {
                       <Input
                         type="email"
                         value={editForm.email}
+                        maxLength={50}
                         onChange={(e) =>
                           setEditForm({ ...editForm, email: e.target.value })
                         }
