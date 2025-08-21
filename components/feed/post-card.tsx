@@ -91,6 +91,13 @@ export function PostCard({
   const displayContent =
     status === "authenticated" ? rawContent : censorText(rawContent);
 
+  const rawTitle = isPreview
+  ? truncateContent(post.title, 69)
+  : post.title;
+
+  const displayTitle =
+    status === "authenticated" ? rawTitle : censorText(rawTitle)
+
   const postUrl = `/post/${post.id}`;
   const router = useRouter();
   const handleCardClick = (e: React.MouseEvent) => {
@@ -194,7 +201,7 @@ export function PostCard({
               isPreview && "hover:text-primary transition-colors",
             )}
           >
-            {truncateContent(post.title, 69)}
+            {displayTitle}
           </h2>
 
           <p className="text-foreground/90 leading-relaxed whitespace-pre-line">
