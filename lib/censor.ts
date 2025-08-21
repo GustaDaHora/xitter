@@ -9,8 +9,8 @@ const badWords = [
   "viado", "desgraça", "arrombado", "filho da puta", "corno", "piranha",
   "vagabunda", "babaca", "otário", "cabrão", "fodido", "pau no cu", "viadinho",
   "viado", "pinto", "bicha", "puto", "putinha", "caralhudo", "caralhuda",
-  "krl", "bosta", "merda", "porra", "cacete", "caralho", "foda-se", "foder", "fodeu",
-  "gozou", "gozada", "gozando", "gozando", "fodeu", "foderam", "foderam-se",
+  "krl", "bosta", "merda", "porras", "cacete", "caralho", "foda-se", "foder", "fodeu",
+  "gozou", "gozada", "gozando", "gozando", "fodeu", "foderam", "foderam-se", "sexuais",
 
   // --- English Suggestive/Inappropriate ---
   "balls", "boobs", "tits", "nipple", "panties", "horny", "sex", "sexy", "moan",
@@ -18,10 +18,11 @@ const badWords = [
   "wet", "creampie", "penetrate", "molest", "rape", "rapist", "incest", "orgasm",
   "masturbate", "ejaculate", "climax", "anal", "thrust", "cum", "facial", "grope",
   "fetish", "genitals", "erection", "penis", "vagina", "testicles", "lick", "bang",
-  "penetration", "hookup", "hooking up", "make out", "kiss", "ass",
+  "penetration", "hookup", "hooking up", "make out", "kiss", "ass", "hitler", "milf", "loli",
+  "porn", "hentai",
 
   // --- Portuguese Suggestive/Inappropriate ---
-  "ânus", "bolas", "seios", "mamilos", "calcinha", "tesão", "sexo", "sensual", "gemido",
+  "ânus", "ânus", "bolas", "seios", "mamilos", "calcinha", "tesão", "tesao", "sexo", "sensual", "gemido",
   "punheta", "boquete", "chupar", "chupei", "nua", "nus", "gozar", "gozo", "molestar",
   "estuprar", "estuprador", "incesto", "orgasmo", "masturbar", "ejacular", "clímax",
   "anal", "enfiar", "gozar", "foder", "foda-se", "pau", "vagina", "pênis", "lamber",
@@ -31,9 +32,13 @@ const badWords = [
   "latinos", "latinas", "judeus", "cristãos", "muçulmanos", "budistas", "ateus",
   "religiosos", "crente", "evangélico", "católico", "espírita", "umbanda", "candomblé",
   "macumba", "candomblé", "umbanda", "santo", "santos", "santíssima", "santíssimo", "santo", "espírito",
-  "nordestino", "nordestina", "nordestinos", "sulista", "sulista", "paulista", "carioca", "macaco",
+  "nordestino", "nordestina", "nordestinos", "sulista", "sulistas", "paulista", "carioca", "macaco",
   "macaca", "macacos", "macacas", "pobre", "imundo", "imunda", "pobreza", "favelado", "favelada", 
-  "favelados", "faveladas", "favelas", "favela", "mendigo", "mendiga", "pelado", "pelada", "pelados", "peladas", "sem roupa", "morri", "morrer", "morto", "morta", "boquinha", "enfia mais fundo", "prazer"
+  "favelados", "faveladas", "favelas", "favela", "mendigo", "mendiga", "pelado", "pelada", "pelados",
+  "peladas", "sem roupa", "morri", "morrer", "morto", "morta", "boquinha", "enfia mais fundo", "prazer",
+  "estuprada", "craquento", "mamando", "troxa", "masturbando", "broxa", "porno", "pornô", "safada", "bumbumzinho",
+  "feia", "feio", "burra", "gorda", "brioco", "safados", "crioulos", "criolos"
+
 ];
 
 // A regular expression to find all occurrences of the bad words, case-insensitively.
@@ -49,5 +54,5 @@ export function censorText(text: string): string {
     return "";
   }
 
-  return text.replace(badWordsRegex, " Vampeta ");
+  return text.replace(badWordsRegex, (match) => "#".repeat(match.length));
 }
