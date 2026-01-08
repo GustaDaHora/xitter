@@ -30,14 +30,31 @@ export async function POST(req: Request) {
     }
   }
 
-  const score = questions.reduce((acc, question, index) => {
-    if (question.answer === answers[index]) {
-      return acc + 10;
-    }
-    return acc;
-  }, 0);
+  // Expecting answers to be a Record<string, string> mapping questionId -> answer
 
-  const iq = Math.round(score * 1.5);
+  // Create a map of questions for easy lookup
+  const questionsMap = new Map(questions.map((q) => [q.id, q]));
+
+  let correctCount = 0;
+
+  // If answers is an object (map)
+  for (const [questionId, userAnswer] of Object.entries(answers)) {
+    const question = questionsMap.get(questionId);
+    if (question && question.answer === userAnswer) {
+      correctCount++;
+    }
+  }
+
+  // Parody Scoring Logic
+  // Min = Total Points (1 point per correct answer)
+  // Max = Correct * 9
+  // Random between Min and Max
+
+  const minScore = correctCount;
+  const maxScore = correctCount * 9;
+
+  // Handle case where correctCount is 0 to avoid range issues (though random(0,0) is 0)
+  const iq = Math.floor(Math.random() * (maxScore - minScore + 1)) + minScore;
 
   await prisma.user.update({
     where: { id: userId },
