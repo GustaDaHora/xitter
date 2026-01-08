@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
-import { Notification, User } from "@prisma/client";
+import { Notification } from "@prisma/client";
 
 export default function NotificationListener() {
   const { data: session } = useSession();
