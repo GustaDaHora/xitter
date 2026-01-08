@@ -45,7 +45,7 @@ export function Sidebar({
       try {
         const res = await fetch("/api/leaderboard?limit=3");
         const data = await res.json();
-        setSuggestedUsers(data.leaderboard);
+        setSuggestedUsers(data.leaderboard || []);
       } catch (error) {
         console.error("Failed to fetch suggested users:", error);
       }
@@ -93,7 +93,7 @@ export function Sidebar({
               className={cn(
                 "w-full justify-start gap-3 h-12",
                 isActive &&
-                  "bg-primary/10 text-primary border border-primary/20",
+                "bg-primary/10 text-primary border border-primary/20",
               )}
             >
               <Link href={item.href}>
