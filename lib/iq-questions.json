@@ -1,57 +1,74 @@
 [
   {
+    "id": "q1",
     "question": "Which number should come next in the pattern? 1, 4, 9, 16, ?",
-    "options": ["20", "25", "30", "36"],
+    "options": ["20", "25", "30", "36", "42"],
     "answer": "25"
   },
   {
+    "id": "q2",
     "question": "If you rearrange the letters C-I-F-I-P-A-C, you would have the name of a(n):",
-    "options": ["City", "Animal", "Ocean", "River"],
+    "options": ["City", "Animal", "Ocean", "River", "Country"],
     "answer": "Ocean"
   },
   {
+    "id": "q3",
     "question": "A is the father of B. But B is not the son of A. How is that possible?",
     "options": [
       "B is A's nephew",
       "B is A's daughter",
       "A is B's uncle",
-      "None of the above"
+      "B is adopted",
+      "It is impossible"
     ],
     "answer": "B is A's daughter"
   },
   {
+    "id": "q4",
     "question": "A man builds a house with all four sides facing south. A bear walks past the house. What color is the bear?",
-    "options": ["White", "Black", "Brown", "Grey"],
+    "options": ["White", "Black", "Brown", "Grey", "Panda"],
     "answer": "White"
   },
   {
+    "id": "q5",
     "question": "What is half of a quarter of 8000?",
-    "options": ["1000", "2000", "4000", "500"],
+    "options": ["1000", "2000", "4000", "500", "250"],
     "answer": "1000"
   },
   {
+    "id": "q6",
     "question": "A doctor gives you 3 pills and tells you to take one every half hour. How long would it be before all the pills had been taken?",
-    "options": ["1 hour", "1.5 hours", "2 hours", "30 minutes"],
+    "options": ["1 hour", "1.5 hours", "2 hours", "30 minutes", "45 minutes"],
     "answer": "1 hour"
   },
   {
+    "id": "q7",
     "question": "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?",
-    "options": ["A dream", "A map", "A book", "A photograph"],
+    "options": ["A dream", "A map", "A book", "A photograph", "A planet"],
     "answer": "A map"
   },
   {
+    "id": "q8",
     "question": "What has an eye, but cannot see?",
-    "options": ["A storm", "A needle", "A potato", "A hurricane"],
+    "options": ["A storm", "A needle", "A potato", "A hurricane", "A Cyclops"],
     "answer": "A needle"
   },
   {
+    "id": "q9",
     "question": "What is always in front of you but can’t be seen?",
-    "options": ["The past", "The present", "The future", "The air"],
+    "options": [
+      "The past",
+      "The present",
+      "The future",
+      "The air",
+      "Your nose"
+    ],
     "answer": "The future"
   },
   {
+    "id": "q10",
     "question": "What has a neck without a head?",
-    "options": ["A bottle", "A shirt", "A guitar", "A mountain"],
+    "options": ["A bottle", "A shirt", "A guitar", "A mountain", "A sweater"],
     "answer": "A bottle"
   }
 ]
