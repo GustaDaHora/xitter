@@ -1,12 +1,14 @@
 import { cn } from "@/lib/utils";
 import { getIQColor, getIQCategory } from "@/lib/utils";
 import { Brain, Zap, Star, Target } from "lucide-react";
+import Link from "next/link";
 
 interface IQBadgeProps {
   iq: number | undefined;
   size?: "sm" | "md" | "lg";
   showCategory?: boolean;
   className?: string;
+  link?: boolean;
 }
 
 export function IQBadge({
@@ -14,6 +16,7 @@ export function IQBadge({
   size = "md",
   showCategory = false,
   className,
+  link = true, // Default to true
 }: IQBadgeProps) {
   const getIcon = (
     iq: number | undefined,
@@ -40,7 +43,7 @@ export function IQBadge({
     lg: "h-5 w-5",
   };
 
-  return (
+  const BadgeContent = (
     <div
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full font-bold transition-all duration-300",
@@ -51,11 +54,21 @@ export function IQBadge({
         className,
       )}
     >
-      {Icon && <Icon className={iconSizes[size]} />} {/* <- Safe check here */}
+      {Icon && <Icon className={iconSizes[size]} />}
       <span>{iq}</span>
       {showCategory && (
         <span className="text-xs opacity-80 font-medium">{category}</span>
       )}
     </div>
   );
+
+  if (link && iq !== undefined) {
+    return (
+      <Link href="/leaderboard" onClick={(e) => e.stopPropagation()}>
+        {BadgeContent}
+      </Link>
+    );
+  }
+
+  return BadgeContent;
 }
