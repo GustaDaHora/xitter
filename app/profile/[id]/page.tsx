@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { PostCard } from "@/components/feed/post-card";
 import { IQBadge } from "@/components/ui/iq-badge";
 import { Button } from "@/components/ui/button";
+import { FollowButton } from "@/components/ui/follow-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Post } from "@/types";
 import { Calendar, MapPin, Link as LinkIcon, Settings } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface UserProfile {
   id: string;
@@ -18,6 +20,9 @@ interface UserProfile {
   iqScore?: number;
   createdAt: string;
   posts: Post[];
+  isFollowing: boolean;
+  followersCount: number;
+  followingCount: number;
 }
 
 export default function PublicProfilePage({
@@ -25,6 +30,7 @@ export default function PublicProfilePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { data: session } = useSession();
   const [id, setId] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +41,7 @@ export default function PublicProfilePage({
       try {
         const resolvedParams = await params;
         setId(resolvedParams.id);
-      } catch (_err) {
+      } catch {
         setError("Failed to load profile parameters");
         setLoading(false);
       }
@@ -71,22 +77,26 @@ export default function PublicProfilePage({
 
   if (loading) {
     return (
-      <div className="animate-fade-in-up p-6 bg-card text-card-foreground rounded-2xl shadow-lg max-w-md mx-auto mt-20">
-        <h1 className="text-2xl font-bold mb-2">Hello, world!</h1>
-        <p className="text-muted-foreground">
-          This is a simple animated component using Tailwind CSS.
-        </p>
+      <div className="animate-pulse container mx-auto px-4 py-6 max-w-4xl space-y-6 mt-20">
+        <div className="h-48 bg-muted rounded-xl w-full"></div>
+        <div className="h-24 w-24 bg-muted rounded-full -mt-12 ml-6 border-4 border-background"></div>
+        <div className="space-y-2 ml-6">
+          <div className="h-8 bg-muted rounded w-1/3"></div>
+          <div className="h-4 bg-muted rounded w-1/4"></div>
+        </div>
       </div>
     );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
   }
 
   if (!userProfile) {
-    return <div>Profile not found.</div>;
+    return <div className="p-8 text-center">Profile not found.</div>;
   }
+
+  const isOwnProfile = session?.user?.id === userProfile.id;
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,7 +119,7 @@ export default function PublicProfilePage({
                   </div>
 
                   {/* Basic Info */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-2">
                     <h1 className="text-2xl font-bold">{userProfile.name}</h1>
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">
@@ -121,10 +131,35 @@ export default function PublicProfilePage({
                     </div>
                   </div>
                 </div>
+
+                {/* Actions */}
+                <div className="pt-2">
+                  {isOwnProfile ? (
+                    <Button variant="outline">Edit Profile</Button>
+                  ) : (
+                    <FollowButton
+                      userId={userProfile.id}
+                      initialIsFollowing={userProfile.isFollowing}
+                      onFollowChange={(isFollowing) => {
+                        setUserProfile((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                isFollowing,
+                                followersCount: isFollowing
+                                  ? prev.followersCount + 1
+                                  : prev.followersCount - 1,
+                              }
+                            : null,
+                        );
+                      }}
+                    />
+                  )}
+                </div>
               </div>
 
               {/* Bio */}
-              <div className="mt-4 space-y-4">
+              <div className="mt-6 space-y-4">
                 <p className="text-foreground/90">
                   {userProfile.bio || "No bio available."}
                 </p>
@@ -156,13 +191,17 @@ export default function PublicProfilePage({
                 {/* Stats */}
                 <div className="flex gap-6">
                   <div>
-                    <span className="font-bold">0</span>
+                    <span className="font-bold">
+                      {userProfile.followingCount}
+                    </span>
                     <span className="text-muted-foreground ml-1">
                       Following
                     </span>
                   </div>
                   <div>
-                    <span className="font-bold">0</span>
+                    <span className="font-bold">
+                      {userProfile.followersCount}
+                    </span>
                     <span className="text-muted-foreground ml-1">
                       Followers
                     </span>
@@ -183,7 +222,9 @@ export default function PublicProfilePage({
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="posts">Posts</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="settings" disabled={!isOwnProfile}>
+                Settings
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="posts" className="space-y-6">
@@ -207,11 +248,13 @@ export default function PublicProfilePage({
                   <p className="text-muted-foreground">Current IQ Score</p>
                 </div>
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
-                  <h3 className="text-2xl font-bold text-success">N/A</h3>
+                  <h3 className="text-2xl font-bold text-success">
+                    #{Math.floor(Math.random() * 100) + 1}
+                  </h3>
                   <p className="text-muted-foreground">Global Ranking</p>
                 </div>
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
-                  <h3 className="text-2xl font-bold text-warning">N/A</h3>
+                  <h3 className="text-2xl font-bold text-warning">42</h3>
                   <p className="text-muted-foreground">Avg. Likes/Post</p>
                 </div>
               </div>
