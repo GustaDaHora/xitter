@@ -68,6 +68,18 @@ model User {
 
   notifications     Notification[] @relation("notifications")
   sentNotifications Notification[] @relation("sent_notifications")
+
+  followedBy Follows[] @relation("followedBy")
+  following  Follows[] @relation("following")
+}
+
+model Follows {
+  follower    User   @relation("following", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("followedBy", fields: [followingId], references: [id])
+  followingId String
+
+  @@id([followerId, followingId])
 }
 
 model Like {
