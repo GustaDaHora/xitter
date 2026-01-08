@@ -39,7 +39,7 @@ export function PostCard({
   isPreview = true,
   onLikeToggle,
 }: PostCardProps) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [currentLikes, setCurrentLikes] = useState(post.likesCount);
   const [isLiked, setIsLiked] = useState(post.isLikedByCurrentUser || false);
 
@@ -91,12 +91,10 @@ export function PostCard({
   const displayContent =
     status === "authenticated" ? rawContent : censorText(rawContent);
 
-  const rawTitle = isPreview
-  ? truncateContent(post.title, 69)
-  : post.title;
+  const rawTitle = isPreview ? truncateContent(post.title, 69) : post.title;
 
   const displayTitle =
-    status === "authenticated" ? rawTitle : censorText(rawTitle)
+    status === "authenticated" ? rawTitle : censorText(rawTitle);
 
   const postUrl = `/post/${post.id}`;
   const router = useRouter();
@@ -171,7 +169,7 @@ export function PostCard({
                   {post.author.name}
                 </h3>
                 {post.author.iqScore && (
-                  <IQBadge iq={post.author.iqScore} size="sm" />
+                  <IQBadge iq={post.author.iqScore} size="sm" link={false} />
                 )}
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
