@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { IQBadge } from "@/components/ui/iq-badge";
+import { FollowButton } from "@/components/ui/follow-button";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { User } from "@/types";
@@ -72,7 +73,7 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-20 h-full w-72 transform border-r border-border bg-card p-4 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+        "fixed inset-y-0 left-0 z-20 h-full w-72 transform border-r border-border bg-card p-4 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:z-0",
         isMenuOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >
@@ -93,7 +94,7 @@ export function Sidebar({
               className={cn(
                 "w-full justify-start gap-3 h-12",
                 isActive &&
-                "bg-primary/10 text-primary border border-primary/20",
+                  "bg-primary/10 text-primary border border-primary/20",
               )}
             >
               <Link href={item.href}>
@@ -118,21 +119,34 @@ export function Sidebar({
           {suggestedUsers.map((user) => (
             <div key={user.id} className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold">
-                  {user.name ? user.name[0] : "U"}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center justify-baseline gap-7 mb-1">
-                    <p className="font-medium truncate">{user.name}</p>
-                    <Button size="thin" variant="outline">
-                      Follow
-                    </Button>
+                <Link href={`/profile/${user.id}`} className="shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold shrink-0 hover:opacity-80 transition-opacity">
+                    {user.name ? user.name[0] : "U"}
                   </div>
-                  <div className="flex items-center justify-baseline gap-13">
-                    <span className="text-sm text-muted-foreground">
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <Link
+                      href={`/profile/${user.id}`}
+                      className="font-medium truncate text-sm hover:underline"
+                    >
+                      {user.name}
+                    </Link>
+                    <FollowButton
+                      userId={user.id}
+                      className="h-6 text-xs px-2"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <Link
+                      href={`/profile/${user.id}`}
+                      className="text-xs text-muted-foreground truncate hover:text-primary transition-colors"
+                    >
                       @{user.username || user.email}
-                    </span>
-                    {user.iqScore && <IQBadge iq={user.iqScore} size="sm" />}
+                    </Link>
+                    {user.iqScore && (
+                      <IQBadge iq={user.iqScore} size="sm" link={false} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -150,9 +164,9 @@ export function Sidebar({
             <p className="text-sm text-muted-foreground">Posts</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-success">
-              {session?.user?.iqScore || "N/A"}
-            </p>
+            <div className="flex justify-center">
+              <IQBadge iq={session?.user?.iqScore} size="lg" showCategory />
+            </div>
             <p className="text-sm text-muted-foreground">IQ Score</p>
           </div>
         </div>
