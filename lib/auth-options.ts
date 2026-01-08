@@ -57,7 +57,25 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      if (trigger === "update") {
+        // Refetch user data from DB when client calls update()
+        // session here is what the client sent to update()
+        // But usually for IQ score update, we just want to REFATCH from DB because DB has changed.
+
+        // Actually, we can fetch the user from DB again here using the token.id (which should be present)
+        if (token.id) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+          });
+
+          if (dbUser) {
+            token.iqScore = dbUser.iqScore;
+            // Update other fields if necessary
+          }
+        }
+      }
+
       if (user) {
         token.id = user.id;
         token.iqScore = user.iqScore;
