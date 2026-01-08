@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { User } from "@/types";
 import { Trophy, Medal, Award, Brain, Zap, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const getRankIcon = (rank: number) => {
   switch (rank) {
@@ -74,10 +75,12 @@ export default function Leaderboard() {
               Discover the brightest minds in our community. Take the IQ test to
               see where you rank among the intellectual elite.
             </p>
-            <Button className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
-              <Zap className="h-4 w-4 mr-2" />
-              Take IQ Test
-            </Button>
+            <Link href="/iq-test">
+              <Button className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
+                <Zap className="h-4 w-4 mr-2" />
+                Take IQ Test
+              </Button>
+            </Link>
           </div>
 
           {/* Top 3 Podium */}
